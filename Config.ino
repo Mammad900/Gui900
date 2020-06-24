@@ -13,8 +13,6 @@
 //     3. Using changeBrightness(), which is the easiest, the least interfering, and the most readable method.
 byte brightness=255;
 
-#define THEME_WIN10
-
 // Uncomment this to keep screen on/off code when screen timeout is disabled
 // By default, when you comment SCREENTIMEOUT, the scrOn() and scrOff() methods will become unavailable.
 // If you uncomment this, those methods will remain available.
