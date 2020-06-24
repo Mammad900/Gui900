@@ -4,7 +4,6 @@ bool quit;
     #include <MCUFRIEND_kbv.h>                      // Hardware-specific library
     #include <TouchScreen.h>                        // Touch library
     #include <FreeDefaultFonts.h>                   // Some normal fonts
-    #include <Fonts/FreeSerifBoldItalic24pt7b.h>    // Font: Serif, Bold, Italic
     #include <Fonts/FreeSans9pt7b.h>                // Small Sans font
     #include <Fonts/FreeSans12pt7b.h>               // Normal Sans font
     #include <Fonts/FreeSans18pt7b.h>               // Big Sans font
