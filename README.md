@@ -16,3 +16,5 @@ To make an application using this library, you have to:
 
 The default library is MCUFRIEND_kbv but will work with most adafruit GFX libraries.
 TFT controller-specific commands (just 3) are written for ILI9325 (but may work on some other controllers).
+
+Note: When compiling this library, make sure to pass the `-fpermissive` flag to the compiler or it won't compile. You have to pass the `-fpermissive` explicitly if you want to compile for DUE or have an old IDE.
