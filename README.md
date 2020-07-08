@@ -8,10 +8,10 @@ To make an application using this library, you have to:
 2. Copy the contents of config.ino to your sketch
 3. Adjust the constants you copied from config.ino specific to your program
 * In setup():
-4. Build the pages using `addbutton()`, `addlabel()`, `addcheckBox()` and `addslider`
-5. Call `start()` to init the TFT screen and render the first page
+4. Build the pages using [`addbutton()`](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/addbutton()), `addlabel()`, `addcheckBox()` and `addslider()`
+5. Call [`start()`](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/start()) to init the TFT screen and render the first page
 * In loop():
-6. Call `checkPage()` to make the application responsive
+6. Call [`checkPage()`](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/checkPage()) to make the application responsive
 7. Check element states and respond to changes if needed
 
 The default library is MCUFRIEND_kbv but will work with most adafruit GFX libraries.
