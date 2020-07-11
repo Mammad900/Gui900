@@ -1,5 +1,5 @@
 # Arduino TFT GUI library
-Enables you to create a multi-page program containing buttons, labels, check-boxes and sliders.
+Allows you to create a multi-page program containing buttons, labels, check-boxes and sliders.
 
 ## Instructions
 * In global scope:
