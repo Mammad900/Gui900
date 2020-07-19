@@ -14,6 +14,8 @@ To create an application using this GUI library, you should:
 6. Call [`checkPage()`](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/checkPage()) to make the application responsive to touches
 7. Check element states and respond to changes if needed
 
+**[Reference](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/)**
+
 This library uses MCUFIRIEND_kbv (available in library manager) as TFT library but will work with most libraries using Adafruit GFX.
 TFT controller-specific commands (just 3) are written for ILI9325 (but may work on some other controllers).
 
