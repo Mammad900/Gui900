@@ -522,7 +522,8 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
         bool     label_visible    [PAGES][LABEL];     // Is label shown?
     int addlabel(int page, uint16_t X, uint16_t Y, String text, uint16_t textcolor,
                  const GFXfont *font = NULL, byte textsizeX = 1, byte textsizeY = 1,
-                 bool enabled = true, bool visible = true) {
+                 bool enabled = true, bool visible = true) 
+    {
         HCT
         int number = label_counts[page]++; // Current label number
 
@@ -596,7 +597,7 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
                     Y = tft.height()-8; // 8 pixels higher than the base of screen
                 }
                 else {
-                    X = tft.height() - ((uint8_t)pgm_read_byte(&(label_font[page][i])->yAdvance)); // Screen height - Text height
+                    Y = tft.height() - ((uint8_t)pgm_read_byte(&(label_font[page][i])->yAdvance)); // Screen height - Text height
                 }
             }
 
@@ -728,7 +729,8 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
     int addcheckBox(int page, uint16_t Xpos, uint16_t Ypos, String text, int size=SIZE12PT28PX,
                     bool checked=false, uint16_t checkColor=TFT_BLACK,uint16_t textColor=TFT_WHITE,
                     uint16_t boxColor=TFT_WHITE, uint16_t boxBorder=TFT_BLACK,bool enabled=true,
-                    bool visible=true){
+                    bool visible=true)
+    {
         HCT
         int number = checkbox_counts[page]++; // Current label number
         checkbox_Xpos       [page][number]=Xpos;
@@ -1090,7 +1092,7 @@ void checkPage( ) {
                     int tah=s_touch_area_height/2;
                     int tat=tac-tah;
                     int tab=tac+tah;
-                    
+
                     if(inRegion(pixel_y, tab, tat, pixel_x, s_X, s_X+s_width-s_thumb_width)){
                         slider_value[CurrentPage][i]=pixel_x-s_X;
                         drawSlider(CurrentPage,i);
