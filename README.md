@@ -1,4 +1,4 @@
-**INCONPLETE**
+**INCOMPLETE**
 
 # Arduino TFT GUI library
 Using this library, you can make an application with a nice UI in just a few minutes. You can make a better interface with a more readable code, and save time and energy.  
