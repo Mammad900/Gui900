@@ -1,3 +1,5 @@
+**INCONPLETE**
+
 # Arduino TFT GUI library
 Using this library, you can make an application with a nice UI in just a few minutes. You can make a better interface with a more readable code, and save time and energy.  
 Just say how your app should look like and what should it do, and the library will take care of the rest.
@@ -20,5 +22,3 @@ This library uses MCUFIRIEND_kbv (available in library manager) as TFT library b
 TFT controller-specific commands (just 3) are written for ILI9325 (but may work on some other controllers).
 
 Note: To compile this library, make sure to use the `-fpermissive` flag or it won't compile. You have to pass `-fpermissive` explicitly if you want to use this library on Arduino Due or you are using an old version of the Arduino IDE.
-
-**This project is still under development**
