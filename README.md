@@ -24,3 +24,5 @@ This library uses MCUFIRIEND_kbv (available in library manager) as TFT library b
 TFT controller-specific commands (just 3) are written for ILI9325 (but may work on some other controllers).
 
 Note: To compile this library, make sure to use the `-fpermissive` flag or it won't compile. You have to pass `-fpermissive` explicitly if you want to use this library on Arduino Due or you are using an old version of the Arduino IDE.
+
+If you have any questions, take a look at [FAQ](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/Frequently-Asked-Questions)
