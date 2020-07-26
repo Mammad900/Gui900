@@ -1,4 +1,4 @@
-bool quit;
+bool quit; // Used for runsketch()
 //Libraries
     #include <Adafruit_GFX.h>                       // Core graphics library, dependency of MCUFRIEND_kbv
     #include <MCUFRIEND_kbv.h>                      // Hardware-specific library
@@ -9,8 +9,8 @@ bool quit;
     #include <Fonts/FreeSans18pt7b.h>               // Big Sans font
     #include <Fonts/FreeSans24pt7b.h>               // Huge Sans font
 //Defines
-    #define runsketch(stp,lop) stp();while(true){lop();}
-    #define HCT haschanged=true;
+    #define runsketch(stp,lop) stp();while(true){lop();} // Runs an embded sketch
+    #define HCT haschanged=true; // This is the [famous] macro that makes the library aware that something has changed.
     #ifdef BUTTON       // Values used by changeButtonProperty()
         #define XPOS 1          // X position
         #define YPOS 2          // Y position
@@ -111,7 +111,7 @@ void scrOff(bool fast=false){
   }
 }
 // Turns screen on
-void scrOn(bool redraw=true){
+void scrOn(){
     tft.WriteCmdData(0x0010,0x1690); // Wake TFT driver
     delay(100); // Let the TFT driver turn on
     if((!screenOn)&&haschanged){ // If it nessecary, redraw.
@@ -141,12 +141,15 @@ bool Touch_getXY(void) {
     // we have some minimum pressure we consider 'valid'
     // pressure of 0 means no pressing!
     bool touch= tp.z > MINPRESSURE && tp.z < MAXPRESSURE;
+
     // For touch debouncing
+    // If last detected touch was at most 100ms ago, it is still being touched.
     unsigned long a=millis(); 
     if(touch)
         lastTouch=a;
     if((!touch)&&((a-lastTouch)<100))
         return true;
+
     // Now map the coordinates and update the vars
     if (touch) {
         pixel_z=tp.z; // Assign pressure. Only for pages with exit triggered by hard touch
@@ -172,7 +175,7 @@ bool Touch_getXY(void) {
         }
         return true;
     }
-    return false;
+    return false; // Wasnt touhed.
 }
 // Gets a color value, and returns a new color value with half R,G,B values
 uint16_t dim(uint16_t color){ 
@@ -223,8 +226,8 @@ bool inRegion(int Y, int Bot, int Top = 0, int X = 120, int Left = 0, int Right 
 //Calculates the position needed to align an object to the centre
 int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
   if (wid == AUTO)
-    wid = tft.width();
-  return ((wid / 2) - (Length * CHwid / 2)) + Left;
+    wid = tft.width(); // Expand AUTO macro
+  return ((wid / 2) - (Length * CHwid / 2)) + Left; // Half of wid minus Length times half of CHwid plus Left
 }
 #ifdef BUTTON
     //Button variables
@@ -237,9 +240,9 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
         uint16_t button_textColor [PAGES][BUTTON];    // Text colors
         uint16_t button_backColor [PAGES][BUTTON];    // Back colors
         uint16_t button_border    [PAGES][BUTTON];    // Border colors
-        uint16_t button_XTO       [PAGES][BUTTON];
-        uint16_t button_YTO       [PAGES][BUTTON];
-        uint16_t button_radius    [PAGES][BUTTON];
+        uint16_t button_XTO       [PAGES][BUTTON];    // X text offset
+        uint16_t button_YTO       [PAGES][BUTTON];    // Y .... ......
+        uint16_t button_radius    [PAGES][BUTTON];    // Border radius
         bool     button_enabled   [PAGES][BUTTON];    // Is button enabled?
         bool     button_visible   [PAGES][BUTTON];    // Is button shown?
         bool     button_pressed   [PAGES][BUTTON];    // Is button pressed?
@@ -247,7 +250,7 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
                    uint16_t textcolor = TFT_WHITE, uint16_t backcolor = TFT_DARKGREY, uint16_t bordercolor = AUTO, bool enabled = true, 
                    bool visible = true,int radius=0,int XtextOffset=0,int YtextOffset=0 ) 
     {
-        HCT
+        HCT // Make the rest of library aware
         if(bordercolor==AUTO){ // Set automatic border color
             if((textcolor==TFT_WHITE) && (backcolor==TFT_DARKGREY)){ //If other colors were given implicitly too,
                 bordercolor=TFT_LIGHTGREY; // Use the default border color
@@ -256,10 +259,13 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
                 bordercolor=backcolor; // Use the same border color as background color
             }
         }
-        if(radius==CIRCLE){
-            radius=min(Width,Height)/2;
+        if(radius==CIRCLE){ // Expand CIRCLE macro
+            radius=min(Width,Height)/2; // half of the smallest between height and width
         }
+
         int number = button_counts[page]++; // Current button number
+
+        // Set the variables
         button_Xpos      [page][number] = X;
         button_Ypos      [page][number] = Y;
         button_width     [page][number] = Width;
@@ -274,11 +280,13 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
         button_XTO       [page][number] = XtextOffset;
         button_YTO       [page][number] = YtextOffset;
         button_radius    [page][number] = radius;
-        return number;
+        
+        return number; // number is the new button's index.
     }
     void drawButton(int page, int i) {
         HCT
         if (button_visible[page][i]) { // Only draw if the button is visible
+
             // Get values
             uint16_t X           = button_Xpos      [page][i];
             uint16_t Y           = button_Ypos      [page][i];
@@ -290,23 +298,24 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
             uint16_t bordercolor = button_border    [page][i];
             bool     enabled     = button_enabled   [page][i];
             uint16_t radius      = button_radius    [page][i];
+
             // Calculate center and right aligns
-            if(X==CENTER){
-                X=Centre(Width, tft.width(), 0, 1);
+            if(X==CENTER){ // Expand CENTER macro for X position
+                X=Centre(Width, tft.width(), 0, 1); // use Centre() here
             }
-            if(X==RIGHT){
-                X=tft.width()-Width;
+            if(X==RIGHT){ // Expand RIGHT macro for Y position
+                X=tft.width()-Width; // Container width minus object width
             }
-            if(Y==CENTER){
-                Y=Centre(Height, tft.height(), 0, 1);
+            if(Y==CENTER){ // Expand CENTER macro for Y position
+                Y=Centre(Height, tft.height(), 0, 1); // Use Centre() here
             }
-            if(Y==RIGHT){
-                Y=tft.height()-Height;
+            if(Y==RIGHT){ // Expand RIGHT macro for Y position
+                Y=tft.height()-Height; // Container height minus object height
             }
             if (!enabled) { // dim the button if it is disabled
-                textcolor = dim(textcolor);
-                backcolor = dim(backcolor);
-                bordercolor = dim(bordercolor);
+                textcolor   = dim(textcolor  ); // Dim text color
+                backcolor   = dim(backcolor  ); // Dim background color
+                bordercolor = dim(bordercolor); // Dim border color
             }
             tft.fillRoundRect(X , Y , Width , Height, radius , backcolor   ); // Draw button background
             if(backcolor!=bordercolor) // To increase speed, draw border only if it has a different color than button background
@@ -361,48 +370,48 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
     }
     void changeButtonProperty(int page, int i, int propertyName, int val, int a = 0) {
         switch (propertyName) { // Which property must be changed?
-            case XPOS:
+            case XPOS: // X position
                 if (button_Xpos[page][i] != val) { // Only change the value if it is really changed
                     HCT
                     if (CurrentPage == page) { // Redraw the button only if it's on the current page
-                        undrawButton(page, i); // Deletes the current button
+                        undrawButton(page, i); // Undraws the current button
                         button_Xpos[page][i] = val; // Assigns the value
                         drawButton(page, i); // Draws the new button
                     }
                     else {
-                        button_Xpos[page][i] = val;
+                        button_Xpos[page][i] = val; // Just assign the var if it is invisible
                     }
                 }
                 break;
-            case YPOS:
-                if (button_Ypos[page][i] != val) {
-                    HCT
-                    if (CurrentPage == page) {
-                        undrawButton(page, i);
-                        button_Ypos[page][i] = val;
-                        drawButton(page, i);
-                    }
-                    else {
-                        button_Ypos[page][i] = val;
-                    }
+            case YPOS: // Y position
+              if (button_Ypos[page][i] != val) { // Only change the value if it is really changed
+                HCT
+                if (CurrentPage == page) { // Redraw the button only if it's on the current page
+                  undrawButton(page, i); // Undraws the current button
+                  button_Ypos[page][i] = val; // Assigns the value
+                  drawButton(page, i); // Draws the new button
                 }
+                else {
+                  button_Ypos[page][i] = val; // Just assign the var if it is invisible
+                }
+              }
                 break;
-            case WIDTH:
-                if (button_width[page][i] != val) {
+            case WIDTH: // Width 
+                if (button_width[page][i] != val) { // Only change the value if it is really changed
                     HCT
-                    if (CurrentPage == page) {
-                        if (val < button_width[page][i]) {
+                    if (CurrentPage == page) { // Redraw the button only if it's on the current page
+                        if (val < button_width[page][i]) { // Undrawing if the new button became larger is just a waste of time.
                             undrawButton(page, i);
                         }
-                        button_width[page][i] = val;
-                        drawButton(page, i);
+                        button_width[page][i] = val; // Assign the value
+                        drawButton(page, i); // Draw the new button
                     }
                     else {
-                        button_width[page][i] = val;
+                        button_width[page][i] = val; // Just assign the var if it is invisible
                     }
                 }
                 break;
-            case HEIGHT:
+            case HEIGHT: // Height
                 if (button_height[page][i] != val) {
                     HCT
                     if (CurrentPage == page) {
@@ -417,10 +426,10 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
                     }
                 }
                 break;
-            case TEXT:
-                changeButtonProperty(page, i, propertyName, String(val), String(""));
+            case TEXT: // Text
+                changeButtonProperty(page, i, propertyName, String(val), String("")); // Use already written code
                 break;
-            case TEXT_COLOR:
+            case TEXT_COLOR: // Text color
                 if (button_textColor[page][i] != val) {
                     HCT
                     button_textColor[page][i] = val;
@@ -429,7 +438,7 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
                     }
                 }
                 break;
-            case BACK_COLOR:
+            case BACK_COLOR: // Background color
                 if (button_backColor[page][i] != val) {
                     HCT
                     button_backColor[page][i] = val;
@@ -439,17 +448,18 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
                     }
                 }
                 break;
-            case BORDER_COLOR:
+            case BORDER_COLOR: // Border color
                 if (button_border[page][i] != val) {
                     HCT
                     button_border[page][i] = val;
-                    if (CurrentPage == page) {
+                    if (CurrentPage == page) { // Just draw the border
+                        // Override the previous border
                         tft.drawRect(button_Xpos[page][i] , button_Ypos[page][i] , button_width[page][i] , button_height[page][i] , val   );
                     }
                 }
                 break;
             case VISIBLE:
-            case ENABLED:
+            case ENABLED: // Visible and enabled
                 changeButtonProperty(page, i, propertyName, (val == 1), false); // To reduce program size, we use pre-defined code. This has a very very small impact on performance (only 1 microsecond slower)
                 break;
         }
@@ -459,22 +469,22 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
             case XPOS:
             case YPOS:
             case WIDTH:
-            case HEIGHT:
-                changeButtonProperty(page, i, propertyName, ((val) ? 1 : 0), 0);
+            case HEIGHT: // X position, Y position, Width and height
+                changeButtonProperty(page, i, propertyName, ((val) ? 1 : 0), 0); // Use already written code. True:1 False:0
                 break;
             case TEXT:
-                changeButtonProperty(page, i, propertyName, ((val) ? "True" : "False"), "");
+                changeButtonProperty(page, i, propertyName, ((val) ? "True" : "False"), ""); // Use already written code. True:'True' False:'False'
                 break;
             case TEXT_COLOR:
             case BACK_COLOR:
-            case BORDER_COLOR:
-                changeButtonProperty(page, i, propertyName, ((val) ? TFT_WHITE : TFT_BLACK), 0);
+            case BORDER_COLOR: // Colors
+                changeButtonProperty(page, i, propertyName, ((val) ? TFT_WHITE : TFT_BLACK), 0); // True:White False:Black
                 break;
-            case ENABLED:
+            case ENABLED: // Enabled
                 if (button_enabled[page][i] != val) {
                     HCT
                     button_enabled[page][i] = val;
-                    if(!val){
+                    if(!val){ // Prevents bugs when this code runs when the button is being touched.
                         button_pressed[page][i] = false;
                     }
                     if (CurrentPage == page) {
@@ -482,12 +492,13 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
                     }
                 }
                 break;
-            case VISIBLE:
+            case VISIBLE: // Visible
                 if ((CurrentPage == page) && (button_visible[page][i] != val)) {
                     HCT
                     button_visible[page][i] = val;
                     if (val == false) {
-                        undrawButton(page, i);
+                        button_pressed[page][i] = false; // Prevents bugs when this code runs when the button is being touched.
+                        undrawButton(page, i); 
                     }
                     else {
                         drawButton(page, i);
@@ -499,7 +510,7 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
 
     }
     void changeButtonProperty(int page, int i, int propertyName, String val, String a = "") {
-        if(propertyName==TEXT){
+        if(propertyName==TEXT){ // Only Text can be changed here
             if (button_text[page][i] != val) {
                 HCT
                 button_text[page][i] = val;
@@ -527,6 +538,7 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
         HCT
         int number = label_counts[page]++; // Current label number
 
+        // Assign variables
         label_Xpos       [page][number] = X;
         label_Ypos       [page][number] = Y;
         label_text       [page][number] = text;
@@ -536,7 +548,8 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
         label_visible    [page][number] = visible;
         label_textSizeX  [page][number] = textsizeX;
         label_textSizeY  [page][number] = textsizeY;
-        return number;
+
+        return number; // Return index of new label
     }
     void drawlabel(int page, int i, bool setTextColor=true) {
         HCT
@@ -572,31 +585,32 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
                 if (label_font[page][i] == NULL) { // A short-cut for default 8*6 font
                     X = tft.width() - (label_text[page][i].length() * 6); // Substract text width from screen width
                 }
-                else {
-                    int16_t x = 0, y = 0, X1, Y1;
+                else { // Custom font
+                    int16_t x = 0, y = 0, X1, Y1; // Vars for getTextBounds
                     uint16_t W, H;
                     String a = label_text[page][i];
-                    tft.getTextBounds(a, x, y, &X1, &Y1, &W, &H);
-                    X = tft.width() - W-5;
+
+                    tft.getTextBounds(a, x, y, &X1, &Y1, &W, &H); // Calculate text size
+                    X = tft.width() - W-5; // Container width - text width - 5px
                 }
             }
-            if (Y == CENTER) {
-                if (label_font[page][i] == NULL) {
-                    Y = Centre(1, tft.height(), 0, 8);
+            if (Y == CENTER) { // Expand CENTER macro for Y position
+                if (label_font[page][i] == NULL) { // Classic 8x6 font
+                    Y = Centre(1, tft.height(), 0, 8); // Use Centre
                 }
-                else {
-                    int16_t x = 0, y = 0, X1, Y1;
+                else { // Custom font
+                    int16_t x = 0, y = 0, X1, Y1; // Values for getTextBounds
                     uint16_t W, H;
                     String a = label_text[page][i];
-                    tft.getTextBounds(a, x, y, &X1, &Y1, &W, &H);
-                    Y = Centre(H, tft.height(), 0, 1);
+                    tft.getTextBounds(a, x, y, &X1, &Y1, &W, &H); // Calculate text height
+                    Y = Centre(H, tft.height(), 0, 1); // Calculate Y position
                 }
             }
-            if (Y == RIGHT) {
-                if (label_font[page][i] == NULL) {
+            if (Y == RIGHT) { // Expand RIGHT macro for Y positon
+                if (label_font[page][i] == NULL) { // Classic 8x6 font
                     Y = tft.height()-8; // 8 pixels higher than the base of screen
                 }
-                else {
+                else { //Custom font
                     Y = tft.height() - ((uint8_t)pgm_read_byte(&(label_font[page][i])->yAdvance)); // Screen height - Text height
                 }
             }
@@ -615,10 +629,10 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
     void undrawlabel(int page, int i) { // Uses the code inside drawlabel() but uses the background color of the page
         HCT
         tft.setTextColor(page_backColors[page]);
-        drawlabel(page,i,false);
+        drawlabel(page,i,false); // This code tells drawlabel() : "Dont set text color! I want a different color. I've set it before."
     }
-    void changeLabelXPos(int page, int i, uint16_t val) {
-        if (label_Xpos[page][i] != val) {
+    void changeLabelXPos(int page, int i, uint16_t val) { // Changes a label's X position
+        if (label_Xpos[page][i] != val) { // Uses the same procedure as changeButtonProperty's code.
             HCT
             if (CurrentPage == page){
                 undrawlabel(page, i);
@@ -629,7 +643,7 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
                 label_Xpos[page][i] = val;
         }
     }
-    void changeLabelYPos(int page, int i, uint16_t val) {
+    void changeLabelYPos(int page, int i, uint16_t val) { // Changes a label's Y position
         if (label_Ypos[page][i] != val) {
             HCT
             if (CurrentPage == page) {
@@ -641,7 +655,7 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
                 label_Ypos[page][i] = val;
         }
     }
-    void changeLabelText(int page, int i, String val) {
+    void changeLabelText(int page, int i, String val) { // Changes a label's content
         if (label_text[page][i] != val) {
             HCT
             if (CurrentPage == page) {
@@ -653,7 +667,7 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
                 label_text[page][i] = val;
         }
     }
-    void changeLabelTextColor(int page, int i, uint16_t val) {
+    void changeLabelTextColor(int page, int i, uint16_t val) { // Changes a label's color
         if (label_textColor[page][i] != val) {
             HCT
             label_textColor[page][i] = val;
@@ -661,7 +675,7 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
                 drawlabel(page, i);
         }
     }
-    void changeLabelFont(int page, int i, const GFXfont *val) {
+    void changeLabelFont(int page, int i, const GFXfont *val) { // Changes a label's font
         if (label_font[page][i] != val) {
             HCT
             if (CurrentPage == page) {
@@ -673,7 +687,7 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
         else
             label_font[page][i] = (GFXfont *)val;
     }
-    void changeLabelEnabled(int page, int i, bool val) {
+    void changeLabelEnabled(int page, int i, bool val) { // Enables or diables a button
         if (label_enabled[page][i] != val) {
             HCT
             label_enabled[page][i] = val;
@@ -681,7 +695,7 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
                 drawlabel(page, i);
         }
     }
-    void changeLabelVisible(int page, int i, bool val) {
+    void changeLabelVisible(int page, int i, bool val) { // Hides or shows a label
         if (label_visible[page][i] != val) {
             HCT
             label_visible[page][i] = val;
@@ -695,7 +709,7 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
             }
         }
     }
-    void changeLabelTextSize(int page, int i, byte X, byte Y) {
+    void changeLabelTextSize(int page, int i, byte X, byte Y) { // Changes the zoom of a label
         if ((label_textSizeX[page][i] != X) || (label_textSizeY[page][i] != Y)) {
             HCT
             if (CurrentPage == page) {
@@ -733,6 +747,8 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
     {
         HCT
         int number = checkbox_counts[page]++; // Current label number
+
+        // Assign variables
         checkbox_Xpos       [page][number]=Xpos;
         checkbox_Ypos       [page][number]=Ypos;
         checkbox_text       [page][number]=text;
@@ -745,96 +761,106 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
         checkbox_enabled    [page][number]=enabled;
         checkbox_visible    [page][number]=visible;
         checkbox_lastState  [page][number]=false;
-        return number;
+
+        return number; // Return new check-box's index
     }
     void drawCheckBox(int page,int i){
         HCT
-        if((checkbox_visible[page][i])){
+        if((checkbox_visible[page][i])){ // Only draw if it is visible
+            // Get values for easier use later
             uint16_t checkColor =checkbox_checkColor [page][i];
             uint16_t textColor  =checkbox_textColor  [page][i];
             uint16_t boxColor   =checkbox_boxColor   [page][i];
             uint16_t borderColor=checkbox_boxBorder  [page][i];
 
-            if(!checkbox_enabled[page][i]){
-                checkColor =dim(checkColor );
-                textColor  =dim(textColor  );
-                boxColor   =dim(textColor  );
-                borderColor=dim(borderColor);
+            if(!checkbox_enabled[page][i]){ // Dim if it is disabled
+                checkColor =dim(checkColor ); // Dim tick color
+                textColor  =dim(textColor  ); // Dim text color
+                boxColor   =dim(textColor  ); // Dim box background color
+                borderColor=dim(borderColor); // Dim box border color
             }
+
             // Draw the box
+
+            // Get values for easier use later
             uint16_t X=checkbox_Xpos[page][i];
             uint16_t Y=checkbox_Ypos[page][i];
             uint16_t size=checkbox_size[page][i];
 
-            tft.fillRect(X,Y,size,size,boxColor);
-            if(boxColor!=borderColor)
-                tft.drawRect(X,Y,size,size,borderColor);
+            tft.fillRect(X,Y,size,size,boxColor); // Fill background
+            if(boxColor!=borderColor) // Only draw border if it is different
+                tft.drawRect(X,Y,size,size,borderColor); // Draw border
 
 
             // Draw the check mark
+            // Don't try to understand this. Even I (this library's writer) cannot understand it.
             if(checkbox_checked[page][i]){
-                int Third=size/3;
-                tft.drawLine(X+2,Y+(Third*2),X+Third,Y+size-2,checkColor);
-                tft.drawLine(X+Third,Y+size-2,X+size-2,Y+1,checkColor);
+                int Third=size/3; // Calculate third of size for ease and performance
+                tft.drawLine(X+2,Y+(Third*2),X+Third,Y+size-2,checkColor); // Left part
+                tft.drawLine(X+Third,Y+size-2,X+size-2,Y+1,checkColor); // Right part
             }
 
-            uint16_t txtY=Y+(size/2);
+            uint16_t txtY = Y + ( size / 2 ); // Be careful, it's a little confusing
+
+            // Add to txtY as much as needed depending on box size
+            // And set font
             switch(size){
-                case SIZE12PT28PX:
+                case SIZE12PT28PX: // 12pt 28px
                     tft.setFont(&FreeSans12pt7b);
                     txtY+=8;
                     break;
-                case SIZE9PT18PX:
+                case SIZE9PT18PX : // 9pt 18px
                     tft.setFont(&FreeSans9pt7b );
                     txtY+=6;
                     break;
-                case SIZE18PT42PX:
+                case SIZE18PT42PX: // 18pt 42px
                     tft.setFont(&FreeSans18pt7b);
                     txtY+=12;
                     break;
-                case SIZE24PT56PX:
+                case SIZE24PT56PX: // 24pt 56px
                     tft.setFont(&FreeSans24pt7b);
                     txtY+=16;
                     break;
             }
-            tft.setTextColor(textColor);
-            tft.setTextSize(1,1);
-            tft.setCursor(X+size+5,txtY);
-            tft.print(checkbox_text[page][i]);
+
+            tft.setTextColor(textColor); // Set text color
+            tft.setTextSize(1,1); // Reset text size
+            tft.setCursor(X+size+5,txtY); // Set text position
+            tft.print(checkbox_text[page][i]); // Print the text at last
         }
     }
     void undrawCheckBox(int page,int i){
         HCT
-        int size=checkbox_size[page][i];
+        int size=checkbox_size[page][i]; // Get size for easier use
         switch(size){
-            case SIZE12PT28PX:
+            case SIZE12PT28PX: // 12pt 28px
                 tft.setFont(&FreeSans12pt7b);
                 break;
-            case SIZE9PT18PX:
+            case SIZE9PT18PX : // 9pt 18px
                 tft.setFont(&FreeSans9pt7b );
                 break;
-            case SIZE18PT42PX:
+            case SIZE18PT42PX: // 18pt 42px
                 tft.setFont(&FreeSans18pt7b);
                 break;
-            case SIZE24PT56PX:
+            case SIZE24PT56PX: // 24pt 56px
                 tft.setFont(&FreeSans24pt7b);
                 break;
         }
-        tft.setTextSize(1,1);
+        tft.setTextSize(1,1); // Reset text size. We are not going to draw any text, we are going to get text size.
         int16_t x = 0, y = 0, X1, Y1; // variables needed to use getTextBounds()
         uint16_t W, H;
         tft.getTextBounds(checkbox_text[page][i], x, y, &X1, &Y1, &W, &H); // Calculate text size
-        tft.fillRect(checkbox_Xpos[page][i],checkbox_Ypos[page][i],size+10+W,size,page_backColors[page]);
+        tft.fillRect(checkbox_Xpos[page][i],checkbox_Ypos[page][i],size+10+W,size,page_backColors[page]); // Fill the check-box with page background color
     }
-    void changeCheckBoxChecked(int page,int i,bool val){
-        if (checkbox_checked[page][i] != val) {
+    void changeCheckBoxChecked(int page,int i,bool val){ // Checks or unchecks a check-box
+        if (checkbox_checked[page][i] != val) { // Run the code only if the value has changed
             HCT
-            checkbox_checked[page][i] = val;
-            if (CurrentPage == page){
+            checkbox_checked[page][i] = val; // Assign the value
+            if (CurrentPage == page){ // Use embded draw only if it is visible
+                bool checked         = val;
                 uint16_t X           = checkbox_Xpos      [CurrentPage][i]; // X
                 uint16_t Y           = checkbox_Ypos      [CurrentPage][i]; // Y
                 uint16_t size        = checkbox_size      [CurrentPage][i]; // Get height
-                bool checked         = checkbox_checked   [CurrentPage][i];
                 uint16_t checkColor  = checkbox_checkColor[CurrentPage][i];
                 uint16_t boxColor    = checkbox_boxColor  [CurrentPage][i];
                 // Draw the check mark
@@ -844,8 +870,8 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
             }
         }
     }
-    void changeCheckBoxEnabled(int page,int i,bool val){
-        if (checkbox_enabled[page][i] != val) {
+    void changeCheckBoxEnabled(int page,int i,bool val){ // Enables or disables a check-box
+        if (checkbox_enabled[page][i] != val) { // Just like changeLabelEnabled
             HCT
             checkbox_enabled[page][i] = val;
             if (CurrentPage == page){
@@ -853,8 +879,8 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
             }
         }
     }
-    void changeCheckBoxVisible(int page,int i,bool val){
-        if (checkbox_visible[page][i] != val) {
+    void changeCheckBoxVisible(int page,int i,bool val){ // Hides or shows a check-box
+        if (checkbox_visible[page][i] != val) { // Like changeLabelVisible
             HCT
             checkbox_visible[page][i] = val;
             if (CurrentPage == page){
@@ -871,39 +897,41 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
 #ifdef SLIDER
     //Slider variables
         uint16_t slider_counts[PAGES];                  // Number of sliders in each page
-        uint16_t slider_Ypos                [PAGES][SLIDER];    
-        uint16_t slider_Xpos                [PAGES][SLIDER];    
-        uint16_t slider_color_border        [PAGES][SLIDER];    
-        uint16_t slider_color_left          [PAGES][SLIDER];    
-        uint16_t slider_color_right         [PAGES][SLIDER];    
-        uint16_t slider_color_thumb         [PAGES][SLIDER];    
-        uint16_t slider_height              [PAGES][SLIDER];    
-        uint16_t slider_width               [PAGES][SLIDER];    
-        uint16_t slider_touch_area_height   [PAGES][SLIDER];    
-        uint16_t slider_thumb_width         [PAGES][SLIDER];    
-        uint16_t slider_value               [PAGES][SLIDER];    
+        uint16_t slider_Xpos                [PAGES][SLIDER];    // X position
+        uint16_t slider_Ypos                [PAGES][SLIDER];    // Y position
+        uint16_t slider_color_border        [PAGES][SLIDER];    // Border color
+        uint16_t slider_color_left          [PAGES][SLIDER];    // Left color
+        uint16_t slider_color_right         [PAGES][SLIDER];    // Right color
+        uint16_t slider_color_thumb         [PAGES][SLIDER];    // Thumb color
+        uint16_t slider_height              [PAGES][SLIDER];    // Height
+        uint16_t slider_width               [PAGES][SLIDER];    // Width
+        uint16_t slider_touch_area_height   [PAGES][SLIDER];    // Area height
+        uint16_t slider_thumb_width         [PAGES][SLIDER];    // Thumb width
+        int      slider_value               [PAGES][SLIDER];    // Value (NOT MAPPED TO MIN AND MAX!)
         bool     slider_enabled             [PAGES][SLIDER];    // Is the slider changable?
         bool     slider_visible             [PAGES][SLIDER];    // Is the slider visible?
        
     int addslider(uint16_t page,uint16_t X,uint16_t Y, uint16_t W=AUTO,uint16_t H=10,
-        uint16_t AreaHeight=AUTO, uint16_t value=0,int min=0,int max=AUTO, uint16_t ColorLeft=TFT_BLACK,
+        uint16_t AreaHeight=AUTO, int value=0,int min=0,int max=AUTO, uint16_t ColorLeft=TFT_BLACK,
         uint16_t colorRight=TFT_BLACK,uint16_t colorBorder=TFT_WHITE,
         uint16_t colorThumb=TFT_WHITE,uint16_t thumbWidth=AUTO,bool enabled=true,bool visible=true)
     {
         HCT
         int number = slider_counts[page]++; // Current label number
-        if(AreaHeight==AUTO){
-            AreaHeight=H*3;
+        if(AreaHeight==AUTO){ // Expand AUTO macro for area height
+            AreaHeight=H*3; // Three times height
         }
-        if(thumbWidth==AUTO){
-            thumbWidth=H*0.7;
+        if(thumbWidth==AUTO){ // Expand AUTO macro
+            thumbWidth=H*0.7; // 70% of height. For 10px height, it is 7px.
         }
-        if(W==AUTO){
-            W=tft.width()-(X*2);
+        if(W==AUTO){ // Expand AUTO macro for width
+            W=tft.width()-(X*2); // Container width minus two times X position
         }
-        if(max==AUTO){
-            max=W-thumbWidth;
+        if(max==AUTO){ // Expand AUTO macro for maximum
+            max=W-thumbWidth; // Width minus thimb width
         }
+
+        // Assign variables
         slider_Xpos                 [page][number]=X;
         slider_Ypos                 [page][number]=Y;
         slider_width                [page][number]=W;
@@ -918,11 +946,13 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
         slider_enabled              [page][number]=enabled;
         slider_visible              [page][number]=visible;
 
-        return number;
+        return number; // Return new slider's index
     }
     void drawSlider(uint16_t page,uint16_t i){
+        // The simplest draw function is here
         HCT
-        if(slider_visible[page][i]){
+        if(slider_visible[page][i]){ // Only draw if it's visible
+            // Get values for easier use
             uint16_t s_X            =slider_Xpos        [page][i];
             uint16_t s_value        =slider_value       [page][i];
             uint16_t s_thumb_width  =slider_thumb_width [page][i];
@@ -933,105 +963,111 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
             uint16_t s_color_border =slider_color_border[page][i];
             uint16_t s_color_thumb  =slider_color_thumb [page][i];
             uint16_t s_Y            =slider_Ypos        [page][i];
-            if(!slider_enabled[page][i]){
-                s_color_border =dim(s_color_border );
-                s_color_left   =dim(s_color_left   );
-                s_color_right  =dim(s_color_right  );
-                s_color_thumb  =dim(s_color_thumb  );
+
+            if(!slider_enabled[page][i]){ // Dim if slider is disabled
+                s_color_border =dim(s_color_border ); // Border color
+                s_color_left   =dim(s_color_left   ); // Left color
+                s_color_right  =dim(s_color_right  ); // Right color
+                s_color_thumb  =dim(s_color_thumb  ); // Thumb color
             }
-            tft.fillRect(s_X+1,s_Y+1,s_value-1,s_height-2,s_color_left);
-            tft.fillRect(s_X+s_value,s_Y+1,s_thumb_width,s_height-2,s_color_thumb);
-            tft.fillRect(s_X+s_value+s_thumb_width,s_Y+1,s_width-s_value-s_thumb_width-1,s_height-2,s_color_right);
-            tft.drawRect(s_X,s_Y,s_width,s_height,s_color_border);
+
+            // Draw the slider
+            tft.fillRect(s_X+1,s_Y+1,s_value-1,s_height-2,s_color_left); // Left area
+            tft.fillRect(s_X+s_value,s_Y+1,s_thumb_width,s_height-2,s_color_thumb); // Thumb
+            tft.fillRect(s_X+s_value+s_thumb_width,s_Y+1,s_width-s_value-s_thumb_width-1,s_height-2,s_color_right); // Right area
+            tft.drawRect(s_X,s_Y,s_width,s_height,s_color_border); // Border
         }
     }
     void undrawSlider(uint16_t page,uint16_t i){
         HCT
+        // Get values for easier use
         uint16_t s_X            =slider_Xpos        [page][i];
         uint16_t s_width        =slider_width       [page][i];
         uint16_t s_height       =slider_height      [page][i];
         uint16_t s_Y            =slider_Ypos        [page][i];
-        tft.fillRect(slider_Xpos[page][i],slider_Ypos[page][i],slider_width[page][i],slider_height[page][i],page_backColors[page]);
+
+        tft.fillRect(slider_Xpos[page][i],slider_Ypos[page][i],slider_width[page][i],slider_height[page][i],page_backColors[page]); // 'Fill' the border
     }
     int getSliderValue(uint16_t page,uint16_t i,int min=0,int max=100){
-        return map(slider_value[page][i],0,slider_width[page][i]-slider_thumb_width[page][i],min,max);
+        return map(slider_value[page][i],                               // Input value
+                   0,                                                   // Input minimum
+                   slider_width[page][i] - slider_thumb_width[page][i], // Input maximum
+                   min,                                                 // Output minimum
+                   max);                                                // Output maximum
     }
 #endif
-void navigatePage( int page , int transition = DEFAULT){
+void navigatePage( int page , int transition = DEFAULT){ // Navigates to another page
     HCT
-    switch (transition) {
-        case DEFAULT:
-            if(!((CurrentPage==0)&&(page==0))){
-                if (page_backColors[CurrentPage] == page_backColors[page]) {
-                    #ifdef BUTTON
+    switch (transition) { // Currently only one transition is supported
+        case DEFAULT: // Default transition
+            if(!((CurrentPage==0)&&(page==0))){ // Do not undraw anything if it was called from start()
+                if (page_backColors[CurrentPage] == page_backColors[page]) { // If background colors were the same, only undraw elements, not the whole screen
+                    #ifdef BUTTON // Undraw all buttons
                         for (int i = 0; i < button_counts[CurrentPage]; i++) {
                             undrawButton(CurrentPage, i);
                         }
                     #endif
-                    #ifdef LABEL
+                    #ifdef LABEL // Undraw all labels
                         for (int i = 0; i < label_counts[CurrentPage]; i++) {
                             undrawlabel(CurrentPage, i);
                         }
                     #endif
-                    #ifdef CHECKBOX
+                    #ifdef CHECKBOX // Undraw all check-boxes
                         for (int i = 0; i < checkbox_counts[CurrentPage]; i++) {
                             undrawCheckBox(CurrentPage, i);
                         }
                     #endif
-                    #ifdef SLIDER
+                    #ifdef SLIDER // Undraw all sliders
                         for (int i = 0; i < slider_counts[CurrentPage]; i++) {
                             undrawSlider(CurrentPage, i);
                         }
                     #endif
                 }
                 else
-                    tft.fillScreen(page_backColors[page]);
+                    tft.fillScreen(page_backColors[page]); // if background colors were different, fill the whole screen
             }
-            #ifdef BUTTON
+            #ifdef BUTTON // Draw all buttons
                 for (int i = 0; i < button_counts[page]; i++) {
                     drawButton(page, i);
                 }
             #endif
-            #ifdef LABEL
+            #ifdef LABEL // Draw all labels
                 for (int i = 0; i < label_counts[page]; i++) {
                     drawlabel(page, i);
                 }
             #endif
-            #ifdef CHECKBOX
+            #ifdef CHECKBOX // Draw all check-boxes
                 for (int i = 0; i < checkbox_counts[page]; i++) {
                     drawCheckBox(page, i);
                 }
             #endif
-            #ifdef SLIDER
+            #ifdef SLIDER // Draw all sliders
                 for (int i = 0; i < slider_counts[page]; i++) {
                     drawSlider(page, i);
                 }
             #endif
-            CurrentPage = page;
+            CurrentPage = page; // Set CurrentPage
             break;
     }
 }
-void checkPage( ) {
-    if ( Touch_getXY()) { // Check buttons only if somewhere is touched
+void checkPage( ) { // Check for touches
+    if ( Touch_getXY()) { // Check elements only if somewhere is touched
         #ifdef SCREENTIMEOUT
             // Code to wake screen up
-            if(!screenOn){
-                #ifndef SCRONREFRESH
-                scrOn(false);
-                #else
-                scrOn();
-                #endif
-                while(Touch_getXY());
-                return;
+            if(!screenOn){ // Just if screen was off
+                scrOn(); // Turn on screen
+                while(Touch_getXY()); // Wait until there is no touch
+                return; // Do not handle elements, so return
             }
         #endif
-        #ifdef BUTTON
-            for (int i = 0; i < button_counts[CurrentPage]; i++) {
+        #ifdef BUTTON // Handle buttons
+            for (int i = 0; i < button_counts[CurrentPage]; i++) { // Iterate through buttons
                 if (button_enabled[CurrentPage][i]) { // Disabled buttons cannot be clicked
                     uint16_t X           = button_Xpos      [CurrentPage][i]; // X
                     uint16_t Y           = button_Ypos      [CurrentPage][i]; // Y
                     uint16_t Width       = button_width     [CurrentPage][i]; // Get width
                     uint16_t Height      = button_height    [CurrentPage][i]; // Get height
+                    // Expand macros
                     if(X==CENTER){
                         X=Centre(Width, tft.width(), 0, 1);
                     }
@@ -1044,12 +1080,14 @@ void checkPage( ) {
                     if(Y==RIGHT){
                         Y=tft.height()-Height;
                     }
+                    // Use inRegion to see if the button is pressed
                     button_pressed[CurrentPage][i] = inRegion(pixel_y, Y + Height, Y, pixel_x, X, X + Width); // Check if it's in the button area
                 }
             }
         #endif
-        #ifdef CHECKBOX
-            for(int i=0;i<checkbox_counts[CurrentPage];i++){
+        // Labels are only shown, they do not handle touch.
+        #ifdef CHECKBOX // Handle check-boxes
+            for(int i=0;i<checkbox_counts[CurrentPage];i++){ // Iterate through check-boxes
                 if(checkbox_enabled[CurrentPage][i]){
                     uint16_t X           = checkbox_Xpos    [CurrentPage][i];                   // X
                     uint16_t Y           = checkbox_Ypos    [CurrentPage][i];                   // Y
@@ -1059,12 +1097,12 @@ void checkPage( ) {
                     uint16_t W, H;
                     tft.getTextBounds(checkbox_text[CurrentPage][i], x, y, &X1, &Y1, &W, &H);   // Calculate text size
                     uint16_t Width       = size+10+W;              // Get width
-                    // Check pressed
+                    // Check if it was pressed
                     bool pressed=inRegion(pixel_y, Y + size , Y, pixel_x, X, X + Width);
-                    if(pressed){
-                        if(!checkbox_lastState[CurrentPage][i]){
-                            checkbox_checked[CurrentPage][i]=!checkbox_checked[CurrentPage][i];
-                            bool checked=checkbox_checked[CurrentPage][i];
+                    if(pressed){ // Toggle states
+                        if(!checkbox_lastState[CurrentPage][i]){ // Only if it wasn't being touched before
+                            checkbox_checked[CurrentPage][i]=!checkbox_checked[CurrentPage][i]; // Toggle value
+                            bool checked=checkbox_checked[CurrentPage][i]; // Get values for easy use
                             uint16_t checkColor=checkbox_checkColor[CurrentPage][i];
                             uint16_t boxColor  =checkbox_boxColor  [CurrentPage][i];
                             // Draw the check mark
@@ -1077,31 +1115,31 @@ void checkPage( ) {
                 }
             }
         #endif
-        #ifdef SLIDER
-            for (int i = 0; i < slider_counts[CurrentPage]; i++) {
+        #ifdef SLIDER // Handle sliders
+            for (int i = 0; i < slider_counts[CurrentPage]; i++) { // Iterate through sliders
                 if (slider_enabled[CurrentPage][i]) { // Disabled sliders cannot be changed
 
                     uint16_t s_X                = slider_Xpos               [CurrentPage][i]; // X
                     uint16_t s_Y                = slider_Ypos               [CurrentPage][i]; // Y
                     uint16_t s_width            = slider_width              [CurrentPage][i]; // Get width
                     uint16_t s_height           = slider_height             [CurrentPage][i]; // Get height
-                    uint16_t s_touch_area_height= slider_touch_area_height  [CurrentPage][i];
-                    uint16_t s_thumb_width      = slider_thumb_width        [CurrentPage][i];
-
-                    int tac=s_Y+(s_height/2);
-                    int tah=s_touch_area_height/2;
-                    int tat=tac-tah;
-                    int tab=tac+tah;
-
+                    uint16_t s_touch_area_height= slider_touch_area_height  [CurrentPage][i]; // Area height
+                    uint16_t s_thumb_width      = slider_thumb_width        [CurrentPage][i]; // Thumb width
+                    // Calculate touch region
+                    int tac=s_Y+(s_height/2);      // Touch area center
+                    int tah=s_touch_area_height/2; // Half of touch area height
+                    int tat=tac-tah;               // Touch area top
+                    int tab=tac+tah;               // Touch area botton
+                    // Was the slider pressed?
                     if(inRegion(pixel_y, tab, tat, pixel_x, s_X, s_X+s_width-s_thumb_width)){
-                        slider_value[CurrentPage][i]=pixel_x-s_X;
-                        drawSlider(CurrentPage,i);
+                        slider_value[CurrentPage][i]=pixel_x-s_X; // Update slider value
+                        drawSlider(CurrentPage,i); // Draw slider with new value
                     }
                 }
             }
         #endif
     }
-  else {
+  else { // It wasn't pressed
     #ifdef BUTTON
         // Set all pressed states to false
         for (int k = 0; k < PAGES; k++) {
@@ -1119,8 +1157,9 @@ void checkPage( ) {
         }
     #endif
     #ifdef SCREENTIMEOUT
+        // Did the last touch occur in at least SCREENTIMEOUT seconds ago?
         if(-(lastTouch-millis())>(SCREENTIMEOUT*1000)){
-            scrOff();
+            scrOff(); // Turn off screen
         }
     #endif
   }

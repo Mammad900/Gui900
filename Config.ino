@@ -1,4 +1,4 @@
-// Number of pages
+﻿// Number of pages
 #define PAGES 6
 
 // The screen time-out in seconds
@@ -25,10 +25,6 @@ byte brightness=255;
 // I tried to add a delay() between turning off backlight and putting the TFT screen to sleep, but it didn't work.
 #define SCROFFANITIME 2
 
-// Uncomment this to enable screen redraw when screen turns on, useful for monitoring apps
-// Redraw will take a little time (average 1sec), so it's disabled by default
-//#define SCRONREFRESH
-
 // Background color of pages
 // An array of 16-bit color values
 uint16_t page_backColors[PAGES]{0,0,0,0,0,0};
@@ -36,7 +32,7 @@ uint16_t page_backColors[PAGES]{0,0,0,0,0,0};
 //The pin to control tft backlight
 //It is recommended to use a PWM pin.
 //If you use an UNO shield on a mega, pins 46, 47, 48 are recommended
-#define BACKLIGHT_PIN 46
+#define BACKLIGHT_PIN DAC1
 
 // Maximum buttons in a page. Too low value causes (miserable) bugs, too much causes high SRAM usage.
 // e.g. if you have 3 pages: one with 3 buttons, one with 5 buttons, one with 4 buttons. You should choose 5.
