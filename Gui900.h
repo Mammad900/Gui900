@@ -20,6 +20,8 @@
     #include <Fonts/FreeSans24pt7b.h>               // Huge Sans font
     
 //Defines
+    #define initArray1(arr,s) arr=initializeArray(arr,s)
+    #define initArray2(arr,s1,s2) arr=initialize2dArray(arr,s1,s2)
     #define runsketch(stp,lop) stp();while(true){lop();} // Runs an embedded sketch
     #define HCT haschanged=true; // This is the [famous] macro that makes the library aware that something has changed.
         #define XPOS 1          // X position
@@ -54,12 +56,12 @@ class Gui900{
         int orientation;
         int timeOut;
         int pageCount,buttonCount,labelCount,checkBoxCount,sliderCount;
-        void initialize2dArray(uint16_t** arr, int d1, int d2);
-        void initializeArray(uint16_t* arr, int size);
-        void initialize2dArray(String** arr, int d1, int d2);
-        void initializeArray(String* arr, int size);
-        void initialize2dArray(bool** arr, int d1, int d2);
-        void initializeArray(bool* arr, int size);
+		uint16_t** initialize2dArray(uint16_t** arr, uint16_t d1, uint16_t d2);
+		uint16_t* initializeArray(uint16_t* arr, uint16_t size);
+		String** initialize2dArray(String** arr, uint16_t d1, uint16_t d2);
+		String* initializeArray(String* arr, uint16_t size);
+		bool** initialize2dArray(bool** arr, uint16_t d1, uint16_t d2);
+		bool* initializeArray(bool* arr, uint16_t size);
         void initarr();
 //Function prototypes 
 public:

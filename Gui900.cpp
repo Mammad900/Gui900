@@ -994,14 +994,6 @@ void Gui900::checkPage( ) { // Check for touches
   }
 }
 
-Gui900::Gui900(int numPages,int numButtons, int numLabels, int numCheckBoxes, int numSliders):
-        pageCount(numPages),
-        buttonCount(numButtons),
-        labelCount(numLabels),
-        checkBoxCount(numCheckBoxes),
-        sliderCount(numSliders){
-}
-
 void Gui900::configTouch(int XP,int XM, int YP, int YM, int RX) 
 {
     this->XP=XP;
@@ -1028,111 +1020,126 @@ void Gui900::timeOutEnable(int timeout)
 
 
 
+Gui900::Gui900(int numPages,int numButtons, int numLabels, int numCheckBoxes, int numSliders):
+        pageCount(numPages),
+        buttonCount(numButtons),
+        labelCount(numLabels),
+        checkBoxCount(numCheckBoxes),
+        sliderCount(numSliders){
+	initarr();
+}
 
-void Gui900::initialize2dArray(uint16_t** arr, int d1, int d2) 
+
+
+
+uint16_t** Gui900::initialize2dArray(uint16_t** arr, uint16_t d1, uint16_t d2)
 {
     arr=new uint16_t*[d1];
-    for(int i=0;i<d1;i++){
-        initializeArray(arr[i],d2);
+    for(uint16_t i=0;i<d1;i++){
+        initArray1(arr[i],d2);
     }
+	return arr;
 }
-void Gui900::initialize2dArray(bool** arr, int d1, int d2) 
+bool** Gui900::initialize2dArray(bool** arr, uint16_t d1, uint16_t d2)
 {
     arr=new bool*[d1];
-    for(int i=0;i<d1;i++){
-        initializeArray(arr[i],d2);
+    for(uint16_t i=0;i<d1;i++){
+		initArray1(arr[i],d2);
     }
+	return arr;
 }
-void Gui900::initialize2dArray(String** arr, int d1, int d2) 
+String** Gui900::initialize2dArray(String** arr, uint16_t d1, uint16_t d2)
 {
     arr=new String*[d1];
-    for(int i=0;i<d1;i++){
-        initializeArray(arr[i],d2);
+    for(uint16_t i=0;i<d1;i++){
+		initArray1(arr[i],d2);
     }
+	return arr;
 }
-void Gui900::initializeArray(uint16_t* arr, int size) 
+uint16_t* Gui900::initializeArray(uint16_t* arr, uint16_t size)
 {
     arr=new uint16_t[size];
+	return arr;
 }
-void Gui900::initializeArray(bool* arr, int size) 
+bool* Gui900::initializeArray(bool* arr, uint16_t size)
 {
     arr=new bool[size];
+	return arr;
 }
-void Gui900::initializeArray(String* arr, int size) 
+String* Gui900::initializeArray(String* arr, uint16_t size)
 {
     arr=new String[size];
+	return arr;
 }
 void Gui900::initarr() 
 {
-    initializeArray(button_counts,pageCount);
+    initArray1(button_counts,pageCount);
 
-    initialize2dArray(button_Xpos,pageCount,buttonCount);
-    initialize2dArray(button_Ypos,pageCount,buttonCount);
-    initialize2dArray(button_width,pageCount,buttonCount);
-    initialize2dArray(button_height,pageCount,buttonCount);
-    initialize2dArray(button_text,pageCount,buttonCount);
-    initialize2dArray(button_textColor,pageCount,buttonCount);
-    initialize2dArray(button_backColor,pageCount,buttonCount);
-    initialize2dArray(button_border,pageCount,buttonCount);
-    initialize2dArray(button_enabled,pageCount,buttonCount);
-    initialize2dArray(button_visible,pageCount,buttonCount);
-    initialize2dArray(button_radius,pageCount,buttonCount);
-    initialize2dArray(button_XTO,pageCount,buttonCount);
-    initialize2dArray(button_YTO,pageCount,buttonCount);
-    initialize2dArray(button_pressed,pageCount,buttonCount);
+    initArray2(button_Xpos,pageCount,buttonCount);
+    initArray2(button_Ypos,pageCount,buttonCount);
+    initArray2(button_width,pageCount,buttonCount);
+    initArray2(button_height,pageCount,buttonCount);
+    initArray2(button_text,pageCount,buttonCount);
+    initArray2(button_textColor,pageCount,buttonCount);
+    initArray2(button_backColor,pageCount,buttonCount);
+    initArray2(button_border,pageCount,buttonCount);
+    initArray2(button_enabled,pageCount,buttonCount);
+    initArray2(button_visible,pageCount,buttonCount);
+    initArray2(button_radius,pageCount,buttonCount);
+    initArray2(button_XTO,pageCount,buttonCount);
+    initArray2(button_YTO,pageCount,buttonCount);
+    initArray2(button_pressed,pageCount,buttonCount);
 
     
-    initializeArray(label_counts,pageCount);
+    initArray1(label_counts,pageCount);
 
-    initialize2dArray(label_Xpos,pageCount,labelCount);
-    initialize2dArray(label_Ypos,pageCount,labelCount);
-    initialize2dArray(label_text,pageCount,labelCount);
-    initialize2dArray(label_textColor,pageCount,labelCount);
-    initialize2dArray(label_textSizeX,pageCount,labelCount);
-    initialize2dArray(label_textSizeY,pageCount,labelCount);
-    initialize2dArray(label_enabled,pageCount,labelCount);
-    initialize2dArray(label_visible,pageCount,labelCount);
+    initArray2(label_Xpos,pageCount,labelCount);
+    initArray2(label_Ypos,pageCount,labelCount);
+    initArray2(label_text,pageCount,labelCount);
+    initArray2(label_textColor,pageCount,labelCount);
+    initArray2(label_textSizeX,pageCount,labelCount);
+    initArray2(label_textSizeY,pageCount,labelCount);
+    initArray2(label_enabled,pageCount,labelCount);
+    initArray2(label_visible,pageCount,labelCount);
 
     label_font=new GFXfont**[pageCount];
-    for(int i=0;i<labelCount;i++){
+    for(uint16_t i=0;i<labelCount;i++){
         label_font[i]=new GFXfont*[labelCount];
     }
     
 
-    initializeArray(checkbox_counts,pageCount);
+    initArray1(checkbox_counts,pageCount);
 
-    initialize2dArray(checkbox_Xpos,pageCount,checkBoxCount);
-    initialize2dArray(checkbox_Ypos,pageCount,checkBoxCount);
-    initialize2dArray(checkbox_text,pageCount,checkBoxCount);
-    initialize2dArray(checkbox_size,pageCount,checkBoxCount);
-    initialize2dArray(checkbox_checkColor,pageCount,checkBoxCount);
-    initialize2dArray(checkbox_textColor,pageCount,checkBoxCount);
-    initialize2dArray(checkbox_boxColor,pageCount,checkBoxCount);
-    initialize2dArray(checkbox_checked,pageCount,checkBoxCount);
-    initialize2dArray(checkbox_enabled,pageCount,checkBoxCount);
-    initialize2dArray(checkbox_visible,pageCount,checkBoxCount);
-    initialize2dArray(checkbox_lastState,pageCount,checkBoxCount);
+    initArray2(checkbox_Xpos,pageCount,checkBoxCount);
+    initArray2(checkbox_Ypos,pageCount,checkBoxCount);
+    initArray2(checkbox_text,pageCount,checkBoxCount);
+    initArray2(checkbox_size,pageCount,checkBoxCount);
+    initArray2(checkbox_checkColor,pageCount,checkBoxCount);
+    initArray2(checkbox_textColor,pageCount,checkBoxCount);
+    initArray2(checkbox_boxColor,pageCount,checkBoxCount);
+    initArray2(checkbox_checked,pageCount,checkBoxCount);
+    initArray2(checkbox_enabled,pageCount,checkBoxCount);
+    initArray2(checkbox_visible,pageCount,checkBoxCount);
+    initArray2(checkbox_lastState,pageCount,checkBoxCount);
 
 
-    initializeArray(slider_counts,pageCount);
+    initArray1(slider_counts,pageCount);
 
-    initialize2dArray(slider_Xpos,pageCount,sliderCount);
-    initialize2dArray(slider_Ypos,pageCount,sliderCount);
-    initialize2dArray(slider_color_border,pageCount,sliderCount);
-    initialize2dArray(slider_color_left,pageCount,sliderCount);
-    initialize2dArray(slider_color_right,pageCount,sliderCount);
-    initialize2dArray(slider_color_thumb,pageCount,sliderCount);
-    initialize2dArray(slider_height,pageCount,sliderCount);
-    initialize2dArray(slider_width,pageCount,sliderCount);
-    initialize2dArray(slider_touch_area_height,pageCount,sliderCount);
-    initialize2dArray(slider_thumb_width,pageCount,sliderCount);
-    initialize2dArray(slider_value,pageCount,sliderCount);
-    initialize2dArray(slider_enabled,pageCount,sliderCount);
-    initialize2dArray(slider_visible,pageCount,sliderCount);
+    initArray2(slider_Xpos,pageCount,sliderCount);
+    initArray2(slider_Ypos,pageCount,sliderCount);
+    initArray2(slider_color_border,pageCount,sliderCount);
+    initArray2(slider_color_left,pageCount,sliderCount);
+    initArray2(slider_color_right,pageCount,sliderCount);
+    initArray2(slider_color_thumb,pageCount,sliderCount);
+    initArray2(slider_height,pageCount,sliderCount);
+    initArray2(slider_width,pageCount,sliderCount);
+    initArray2(slider_touch_area_height,pageCount,sliderCount);
+    initArray2(slider_thumb_width,pageCount,sliderCount);
+    initArray2(slider_value,pageCount,sliderCount);
+    initArray2(slider_enabled,pageCount,sliderCount);
+    initArray2(slider_visible,pageCount,sliderCount);
     
 }
-
-
 
 
 
