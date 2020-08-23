@@ -4,10 +4,12 @@ bool quit; // Used for runsketch()
     #include <MCUFRIEND_kbv.h>                      // Hardware-specific library
     #include <TouchScreen.h>                        // Touch library
     #include <FreeDefaultFonts.h>                   // Some normal fonts
-    #include <Fonts/FreeSans9pt7b.h>                // Small Sans font
-    #include <Fonts/FreeSans12pt7b.h>               // Normal Sans font
-    #include <Fonts/FreeSans18pt7b.h>               // Big Sans font
-    #include <Fonts/FreeSans24pt7b.h>               // Huge Sans font
+    #ifndef DISABLEFONTS
+        #include <Fonts/FreeSans9pt7b.h>            // Small Sans font
+        #include <Fonts/FreeSans12pt7b.h>           // Normal Sans font
+        #include <Fonts/FreeSans18pt7b.h>           // Big Sans font
+        #include <Fonts/FreeSans24pt7b.h>           // Huge Sans font
+    #endif
 //Defines
     #define runsketch(stp,lop) stp();while(true){lop();} // Runs an embedded sketch
     #define HCT haschanged=true; // This is the [famous] macro that makes the library aware that something has changed.
@@ -46,8 +48,8 @@ bool quit; // Used for runsketch()
     #ifdef BUTTON // Button functions
         void drawButton(int page,int i); // Draws a button. Don't use publicly. It will draw even if the button is not in current page.
         int addbutton( int page, uint16_t X, uint16_t Y, uint16_t Width, uint16_t Height, String text,
-                   uint16_t textcolor = TFT_WHITE, uint16_t backcolor = TFT_DARKGREY, uint16_t bordercolor = AUTO, bool enabled = true, 
-                   bool visible = true,int radius=0,int XtextOffset=0,int YtextOffset=0 )  ; // Adds a button. Use before start()
+                    uint16_t textcolor = TFT_WHITE, uint16_t backcolor = TFT_DARKGREY, uint16_t bordercolor = AUTO, bool enabled = true, 
+                    bool visible = true,int radius=0,int XtextOffset=0,int YtextOffset=0 )  ; // Adds a button. Use before start()
         void undrawButton(int page,int i); // Hides a button. Don't use publicly
         void changeButtonProperty(int page, int i, int propertyName, int val,int a=0); // Changes a button's property
         void changeButtonProperty(int page, int i, int propertyName, bool val,bool a=false); // Changes a button's property
@@ -329,31 +331,40 @@ int Centre(int Length, int wid, int Left, int CHwid) {
             tft.fillRoundRect(X , Y , Width , Height, radius , backcolor   ); // Draw button background
             if(backcolor!=bordercolor) // To increase speed, draw border only if it has a different color than button background
                 tft.drawRoundRect(X , Y , Width , Height ,radius, bordercolor ); // Draw button border
-            tft.setFont(&FreeSans24pt7b); // Use the biggest font, size will be reduced if needed
             tft.setTextColor(textcolor); // Sets the foreground color
             int16_t x = 0, y = 0, X1, Y1; // variables needed to use getTextBounds()
             uint16_t W, H;
+            #ifndef DISABLEFONTS
+            tft.setFont(&FreeSans24pt7b); // Use the biggest font, size will be reduced if needed
             tft.getTextBounds(text, x, y, &X1, &Y1, &W, &H); // Calculate text size
-
-            if ((W > Width) || (H > Height)) { // Does the text exceed the button area?
-                tft.setFont(&FreeSans18pt7b); // Sets a small font
-                tft.getTextBounds(text, x, y, &X1, &Y1, &W, &H); // Checks text size again
-
-                if ((W > Width) || (H > Height)) {
-                    tft.setFont(&FreeSans12pt7b);
-                    tft.getTextBounds(text, x, y, &X1, &Y1, &W, &H);
+                if ((W > Width) || (H > Height)) { // Does the text exceed the button area?
+                    tft.setFont(&FreeSans18pt7b); // Sets a small font
+                    tft.getTextBounds(text, x, y, &X1, &Y1, &W, &H); // Checks text size again
 
                     if ((W > Width) || (H > Height)) {
-                        tft.setFont(&FreeSans9pt7b);
+                        tft.setFont(&FreeSans12pt7b);
                         tft.getTextBounds(text, x, y, &X1, &Y1, &W, &H);
+
+                        if ((W > Width) || (H > Height)) {
+                            tft.setFont(&FreeSans9pt7b);
+                            tft.getTextBounds(text, x, y, &X1, &Y1, &W, &H);
+                        }
                     }
                 }
-            }
+            #else
+                tft.setFont(NULL);
+                tft.getTextBounds(text, x, y, &X1, &Y1, &W, &H);
+            #endif
             int txtX = Centre( W, Width , X, 1); // Calculate the X position where text should be printed
             int txtY = Centre( H, Height, Y, 1); // ......... ... Y ........ ..... .... ...... .. .......
             tft.setTextSize(1, 1); // Assign the text size
+            #ifndef DISABLEFONTS
             tft.setCursor(txtX -   2+button_XTO[page][i],
                           txtY + H-2+button_YTO[page][i]); // Assign the text position
+            #else
+            tft.setCursor(txtX -   2+button_XTO[page][i],
+                          txtY +button_YTO[page][i]); // Assign the text position
+            #endif
             tft.print(text); // Print the text at last
         }
     }
@@ -819,8 +830,10 @@ int Centre(int Length, int wid, int Left, int CHwid) {
 
             uint16_t txtY = Y + ( size / 2 ); // Be careful, it's a little confusing
 
+            tft.setTextSize(1, 1); // Reset text size
             // Add to txtY as much as needed depending on box size
             // And set font
+            #ifndef DISABLEFONTS
             switch(size){
                 case SIZE12PT28PX: // 12pt 28px
                     tft.setFont(&FreeSans12pt7b);
@@ -839,9 +852,29 @@ int Centre(int Length, int wid, int Left, int CHwid) {
                     txtY+=16;
                     break;
             }
+            #else
+                tft.setFont(NULL);
+                switch (size) {
+                    case SIZE12PT28PX: // 12pt 28px
+                        tft.setTextSize(3);
+                        txtY -= 12;
+                        break;
+                    case SIZE9PT18PX: // 9pt 18px
+                        tft.setTextSize(2);
+                        txtY -= 8;
+                        break;
+                    case SIZE18PT42PX: // 18pt 42px
+                        tft.setTextSize(5);
+                        txtY -= 20;
+                        break;
+                    case SIZE24PT56PX: // 24pt 56px
+                        tft.setTextSize(7);
+                        txtY -= 28;
+                        break;
+                }
+            #endif
 
             tft.setTextColor(textColor); // Set text color
-            tft.setTextSize(1,1); // Reset text size
             tft.setCursor(X+size+5,txtY); // Set text position
             tft.print(checkbox_text[page][i]); // Print the text at last
         }
@@ -849,20 +882,38 @@ int Centre(int Length, int wid, int Left, int CHwid) {
     void undrawCheckBox(int page,int i){
         HCT
         int size=checkbox_size[page][i]; // Get size for easier use
-        switch(size){
-            case SIZE12PT28PX: // 12pt 28px
-                tft.setFont(&FreeSans12pt7b);
-                break;
-            case SIZE9PT18PX : // 9pt 18px
-                tft.setFont(&FreeSans9pt7b );
-                break;
-            case SIZE18PT42PX: // 18pt 42px
-                tft.setFont(&FreeSans18pt7b);
-                break;
-            case SIZE24PT56PX: // 24pt 56px
-                tft.setFont(&FreeSans24pt7b);
-                break;
-        }
+            #ifndef DISABLEFONTS
+            switch(size){
+                case SIZE12PT28PX: // 12pt 28px
+                    tft.setFont(&FreeSans12pt7b);
+                    break;
+                case SIZE9PT18PX : // 9pt 18px
+                    tft.setFont(&FreeSans9pt7b );
+                    break;
+                case SIZE18PT42PX: // 18pt 42px
+                    tft.setFont(&FreeSans18pt7b);
+                    break;
+                case SIZE24PT56PX: // 24pt 56px
+                    tft.setFont(&FreeSans24pt7b);
+                    break;
+            }
+            #else
+                tft.setFont(NULL);
+                switch (size) {
+                    case SIZE12PT28PX: // 12pt 28px
+                        tft.setTextSize(3);
+                        break;
+                    case SIZE9PT18PX: // 9pt 18px
+                        tft.setTextSize(2);
+                        break;
+                    case SIZE18PT42PX: // 18pt 42px
+                        tft.setTextSize(5);
+                        break;
+                    case SIZE24PT56PX: // 24pt 56px
+                        tft.setTextSize(7);
+                        break;
+                }
+            #endif
         tft.setTextSize(1,1); // Reset text size. We are not going to draw any text, we are going to get text size.
         int16_t x = 0, y = 0, X1, Y1; // variables needed to use getTextBounds()
         uint16_t W, H;

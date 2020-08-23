@@ -13,6 +13,12 @@
 //     3. Using changeBrightness(), which is the easiest, the least interfering, and the most readable method.
 byte brightness=255;
 
+// Fonts will fill a lot of flash memory (more than 75%)
+// So apps written with this library won't fit in small flash memories.
+// Uncomment this to disable FreeSans fonts and use NULL instead,
+// this releases a lot of program memory. (EXPERIMENTAL)
+//#define DISABLEFONTS
+
 // Uncomment this to keep screen on/off code when screen timeout is disabled
 // By default, when you comment SCREENTIMEOUT, the scrOn() and scrOff() methods will become unavailable.
 // If you uncomment this, those methods will remain available.
