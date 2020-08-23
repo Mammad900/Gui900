@@ -976,6 +976,8 @@ int Centre(int Length, int wid, int Left, int CHwid) {
         uint16_t slider_touch_area_height   [PAGES][SLIDER];    // Area height
         uint16_t slider_thumb_width         [PAGES][SLIDER];    // Thumb width
         int      slider_value               [PAGES][SLIDER];    // Value (NOT MAPPED TO MIN AND MAX!)
+        int      slider_min                 [PAGES][SLIDER];    // The value when slider is at the leftmost position
+        int      slider_max                 [PAGES][SLIDER];    // The value when slider is at the rightmost position
         bool     slider_enabled             [PAGES][SLIDER];    // Is the slider changable?
         bool     slider_visible             [PAGES][SLIDER];    // Is the slider visible?
        
@@ -1013,6 +1015,8 @@ int Centre(int Length, int wid, int Left, int CHwid) {
         slider_thumb_width          [page][number]=thumbWidth;
         slider_enabled              [page][number]=enabled;
         slider_visible              [page][number]=visible;
+        slider_min                  [page][number]=min;
+        slider_max                  [page][number]=max;
 
         if (started && (CurrentPage == page)) {
           drawSlider(page, number);
@@ -1060,12 +1064,19 @@ int Centre(int Length, int wid, int Left, int CHwid) {
 
         tft.fillRect(slider_Xpos[page][i],slider_Ypos[page][i],slider_width[page][i],slider_height[page][i],page_backColors[page]); // 'Fill' the border
     }
-    int getSliderValue(uint16_t page,uint16_t i,int min=0,int max=100){
+    int getSliderValue(uint16_t page,uint16_t i,int min,int max){
         return map(slider_value[page][i],                               // Input value
                    0,                                                   // Input minimum
                    slider_width[page][i] - slider_thumb_width[page][i], // Input maximum
                    min,                                                 // Output minimum
                    max);                                                // Output maximum
+    }
+    int getSliderValue(uint16_t page,uint16_t i){
+        return map(slider_value[page][i],                               // Input value
+                   0,                                                   // Input minimum
+                   slider_width[page][i] - slider_thumb_width[page][i], // Input maximum
+                   slider_min[page][i],                                 // Output minimum
+                   slider_max[page][i]);                                // Output maximum
     }
 #endif
 void navigatePage( int page , int transition){ // Navigates to another page
