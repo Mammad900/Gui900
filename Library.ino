@@ -9,7 +9,7 @@ bool quit; // Used for runsketch()
     #include <Fonts/FreeSans18pt7b.h>               // Big Sans font
     #include <Fonts/FreeSans24pt7b.h>               // Huge Sans font
 //Defines
-    #define runsketch(stp,lop) stp();while(true){lop();} // Runs an embded sketch
+    #define runsketch(stp,lop) stp();while(true){lop();} // Runs an embedded sketch
     #define HCT haschanged=true; // This is the [famous] macro that makes the library aware that something has changed.
     #ifdef BUTTON       // Values used by changeButtonProperty()
         #define XPOS 1          // X position
@@ -42,19 +42,22 @@ bool quit; // Used for runsketch()
     bool inRegion(int Y, int Bot, int Top = 0, int X = 120, int Left = 0, int Right = 240); //If given coordinates are in the given range, returns true.
     int calculateListY(int num); // Calculates the Y position of a button with the given number that is in a list (not used by the library), you can use it.
     void start(); // Starts TFT screen and draws page 0. Call only once and at the end of setup().
-    void navigatePage( int page , int transition = 1); // Navigates to a page. This can be used in loop(). It is implicitly called by start() and recalling it causes another draw (only waste of time)
+    void navigatePage( int page , int transition = DEFAULT); // Navigates to a page. This can be used in loop(). It is implicitly called by start() and recalling it causes another draw (only waste of time)
     #ifdef BUTTON // Button functions
         void drawButton(int page,int i); // Draws a button. Don't use publicly. It will draw even if the button is not in current page.
-        int addbutton(int page, uint16_t X, uint16_t Y, uint16_t Width, uint16_t Height, String text,
-        uint16_t textcolor=TFT_WHITE, uint16_t backcolor=TFT_DARKGREY, uint16_t bordercolor=AUTO, bool enabled = true, 
-        bool visible = true,int radius=0,int XtextOffset=0,int YtextOffset=0) ; // Adds a button. Use before start()
+        int addbutton( int page, uint16_t X, uint16_t Y, uint16_t Width, uint16_t Height, String text,
+                   uint16_t textcolor = TFT_WHITE, uint16_t backcolor = TFT_DARKGREY, uint16_t bordercolor = AUTO, bool enabled = true, 
+                   bool visible = true,int radius=0,int XtextOffset=0,int YtextOffset=0 )  ; // Adds a button. Use before start()
         void undrawButton(int page,int i); // Hides a button. Don't use publicly
         void changeButtonProperty(int page, int i, int propertyName, int val,int a=0); // Changes a button's property
         void changeButtonProperty(int page, int i, int propertyName, bool val,bool a=false); // Changes a button's property
         void changeButtonProperty(int page, int i, int propertyName, String val, String a = ""); // Changes a button's propery
     #endif
     #ifdef LABEL  // Label functions
-        int  addlabel(int page, uint16_t X, uint16_t Y, String text, uint16_t textcolor, const GFXfont *font = NULL, byte textsizeX = 1, byte textsizeY = 1, bool enabled = true, bool visible = true); // Adds a label. Use before start()
+        int addlabel(int page, uint16_t X, uint16_t Y, String text,
+                     uint16_t textcolor, const GFXfont *font = NULL,
+                     byte textsizeX = 1, byte textsizeY = 1,
+                     bool enabled = true, bool visible = true); // Adds a label. Use before start()
         void drawlabel(int page, int i, bool setTextColor=true); // Draws a label. Don't use publicly
         void undrawlabel(int page, int i); // Hides a label. Don't use publicly
         void changeLabelXPos(int page, int i, uint16_t val); // Changes X position of a label
@@ -74,8 +77,8 @@ bool quit; // Used for runsketch()
         void changeCheckBoxVisible(int page,int i,bool val); // Hides or shows a check-box.
     #endif
     #if (defined(SCREENTIMEOUT))||(defined (ALLOWSCREENCONTROL)) // Functions for turning screen on/off. Only if SCREENTIMEOUT or ALLOWSCREENCONTROL is defined
-        void scrOff(bool fast);//Turns off the screen
-        void scrOn(bool redraw);//Turns on the screen
+        void scrOff(bool fast=false);//Turns off the screen
+        void scrOn();//Turns on the screen
     #endif
     void checkPage( ); // Checks the current page (Updates button, checkbox and slider states)
 //Global variables
@@ -90,9 +93,10 @@ bool quit; // Used for runsketch()
     unsigned long lastTouch; //The millis of the last time screen sensed a touch 
     bool screenOn=true; // Is the display turned on?
     bool haschanged=false; // Has anything changed since the screen was off?
+    bool started=false;
 #if (defined(SCREENTIMEOUT))||(defined (ALLOWSCREENCONTROL)) //Screen on/ off controls
 // Turns screen off
-void scrOff(bool fast=false){ 
+void scrOff(bool fast){ 
     haschanged=false;
   if(screenOn){ // Does not do anything if screen is off.
     #ifdef SCROFFANITIME // Only if an animation time is defined in Config.ino
@@ -186,17 +190,18 @@ uint16_t dim(uint16_t color){
 }
 // Starts TFT screen and draws page 0. Call only once and at the end of setup().
 void start() {
-  pinMode(BACKLIGHT_PIN,OUTPUT); // Set the backlight pin as an output
-  tft.reset(); // Resets the TFT
-  uint16_t ID = tft.readID(); // Different TFT controllers may be used, this identifies the controller model
-  tft.begin(ID); // Inits the TFT screen
-  if(ID==0x9325) // This only works with ILI9325. for other controllers, you need a different command.
-    tft.WriteCmdData(0x2B, 0x000E); // Set frame rate to 112 fps. Used for better look in screen off animation Remember to change this low-level command to match your controller
-  delay(100); // Wait a little to rest the shield (may not affect anything)
-  tft.setRotation(Orientation); // Sets rotation to predefined value
-  tft.fillScreen(page_backColors[CurrentPage]); // Fills the screen with the firt page's color. Filling with black before it only wastes time.
-  navigatePage(0); // Draw the first page.
-  analogWrite(BACKLIGHT_PIN,brightness*BC); // Activate backlight
+    pinMode(BACKLIGHT_PIN,OUTPUT); // Set the backlight pin as an output
+    tft.reset(); // Resets the TFT
+    uint16_t ID = tft.readID(); // Different TFT controllers may be used, this identifies the controller model
+    tft.begin(ID); // Inits the TFT screen
+    if(ID==0x9325) // This only works with ILI9325. for other controllers, you need a different command.
+        tft.WriteCmdData(0x2B, 0x000E); // Set frame rate to 112 fps. Used for better look in screen off animation Remember to change this low-level command to match your controller
+    delay(100); // Wait a little to rest the shield (may not affect anything)
+    tft.setRotation(Orientation); // Sets rotation to predefined value
+    tft.fillScreen(page_backColors[CurrentPage]); // Fills the screen with the firt page's color. Filling with black before it only wastes time.
+    navigatePage(0); // Draw the first page.
+    analogWrite(BACKLIGHT_PIN,brightness*BC); // Activate backlight
+    started=true;
 }
 // Changes the brightness of the TFT screen using backlight control
 void changeBrightness(byte value){
@@ -212,7 +217,7 @@ void changeBrightness(byte value){
     #endif
 }
 //If given coordinates are in the given range, returns true.
-bool inRegion(int Y, int Bot, int Top = 0, int X = 120, int Left = 0, int Right = 240) {
+bool inRegion(int Y, int Bot, int Top, int X, int Left, int Right) {
   if ((
         X >= Left &&
         X <= Right &&
@@ -224,7 +229,7 @@ bool inRegion(int Y, int Bot, int Top = 0, int X = 120, int Left = 0, int Right 
   else return false;
 }
 //Calculates the position needed to align an object to the centre
-int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
+int Centre(int Length, int wid, int Left, int CHwid) {
   if (wid == AUTO)
     wid = tft.width(); // Expand AUTO macro
   return ((wid / 2) - (Length * CHwid / 2)) + Left; // Half of wid minus Length times half of CHwid plus Left
@@ -247,8 +252,8 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
         bool     button_visible   [PAGES][BUTTON];    // Is button shown?
         bool     button_pressed   [PAGES][BUTTON];    // Is button pressed?
     int addbutton( int page, uint16_t X, uint16_t Y, uint16_t Width, uint16_t Height, String text,
-                   uint16_t textcolor = TFT_WHITE, uint16_t backcolor = TFT_DARKGREY, uint16_t bordercolor = AUTO, bool enabled = true, 
-                   bool visible = true,int radius=0,int XtextOffset=0,int YtextOffset=0 ) 
+                   uint16_t textcolor, uint16_t backcolor, uint16_t bordercolor, bool enabled, 
+                   bool visible, int radius, int XtextOffset, int YtextOffset ) 
     {
         HCT // Make the rest of library aware
         if(bordercolor==AUTO){ // Set automatic border color
@@ -280,6 +285,10 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
         button_XTO       [page][number] = XtextOffset;
         button_YTO       [page][number] = YtextOffset;
         button_radius    [page][number] = radius;
+
+        if(started&&(CurrentPage==page)){
+            drawButton(page,number);
+        }
         
         return number; // number is the new button's index.
     }
@@ -368,7 +377,7 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
         }
         tft.fillRect(X, Y, Width, Height, page_backColors[page]); // Fills the area of the button with the page background
     }
-    void changeButtonProperty(int page, int i, int propertyName, int val, int a = 0) {
+    void changeButtonProperty(int page, int i, int propertyName, int val, int a) {
         switch (propertyName) { // Which property must be changed?
             case XPOS: // X position
                 if (button_Xpos[page][i] != val) { // Only change the value if it is really changed
@@ -464,7 +473,7 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
                 break;
         }
     }
-    void changeButtonProperty(int page, int i, int propertyName, bool val, bool a = false) {
+    void changeButtonProperty(int page, int i, int propertyName, bool val, bool a) {
         switch (propertyName) {
             case XPOS:
             case YPOS:
@@ -509,7 +518,7 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
         }
 
     }
-    void changeButtonProperty(int page, int i, int propertyName, String val, String a = "") {
+    void changeButtonProperty(int page, int i, int propertyName, String val, String a) {
         if(propertyName==TEXT){ // Only Text can be changed here
             if (button_text[page][i] != val) {
                 HCT
@@ -532,8 +541,8 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
         bool     label_enabled    [PAGES][LABEL];     // Is label enabled?
         bool     label_visible    [PAGES][LABEL];     // Is label shown?
     int addlabel(int page, uint16_t X, uint16_t Y, String text, uint16_t textcolor,
-                 const GFXfont *font = NULL, byte textsizeX = 1, byte textsizeY = 1,
-                 bool enabled = true, bool visible = true) 
+                 const GFXfont *font, byte textsizeX , byte textsizeY ,
+                 bool enabled , bool visible = true) 
     {
         HCT
         int number = label_counts[page]++; // Current label number
@@ -548,6 +557,10 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
         label_visible    [page][number] = visible;
         label_textSizeX  [page][number] = textsizeX;
         label_textSizeY  [page][number] = textsizeY;
+
+        if (started && (CurrentPage == page)) {
+          drawlabel(page, number);
+        }
 
         return number; // Return index of new label
     }
@@ -762,6 +775,10 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
         checkbox_visible    [page][number]=visible;
         checkbox_lastState  [page][number]=false;
 
+        if (started && (CurrentPage == page)) {
+          drawCheckBox(page, number);
+        }
+
         return number; // Return new check-box's index
     }
     void drawCheckBox(int page,int i){
@@ -946,6 +963,10 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
         slider_enabled              [page][number]=enabled;
         slider_visible              [page][number]=visible;
 
+        if (started && (CurrentPage == page)) {
+          drawSlider(page, number);
+        }
+
         return number; // Return new slider's index
     }
     void drawSlider(uint16_t page,uint16_t i){
@@ -996,7 +1017,7 @@ int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6) {
                    max);                                                // Output maximum
     }
 #endif
-void navigatePage( int page , int transition = DEFAULT){ // Navigates to another page
+void navigatePage( int page , int transition){ // Navigates to another page
     HCT
     switch (transition) { // Currently only one transition is supported
         case DEFAULT: // Default transition

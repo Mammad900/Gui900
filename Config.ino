@@ -1,4 +1,4 @@
-﻿// Number of pages
+// Number of pages
 #define PAGES 6
 
 // The screen time-out in seconds
@@ -32,7 +32,7 @@ uint16_t page_backColors[PAGES]{0,0,0,0,0,0};
 //The pin to control tft backlight
 //It is recommended to use a PWM pin.
 //If you use an UNO shield on a mega, pins 46, 47, 48 are recommended
-#define BACKLIGHT_PIN DAC1
+#define BACKLIGHT_PIN 46
 
 // Maximum buttons in a page. Too low value causes (miserable) bugs, too much causes high SRAM usage.
 // e.g. if you have 3 pages: one with 3 buttons, one with 5 buttons, one with 4 buttons. You should choose 5.
