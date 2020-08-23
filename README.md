@@ -1,8 +1,6 @@
 
 # Arduino TFT GUI library
 
-**INCOMPLETE**
-
 Using this library, you can make an application with a nice UI in just a few minutes. You can make a better interface with a more readable code, and save time and energy.  
 Just say how your app should look like and what should it do, and the library will take care of the rest.
 
