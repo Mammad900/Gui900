@@ -1171,7 +1171,7 @@ void checkPage( ) { // Check for touches
         // Labels are only shown, they do not handle touch.
         #ifdef CHECKBOX // Handle check-boxes
             for(int i=0;i<checkbox_counts[CurrentPage];i++){ // Iterate through check-boxes
-                if(checkbox_enabled[CurrentPage][i]){
+                if((checkbox_enabled[CurrentPage][i])&&(checkbox_visible[CurrentPage][i])){
                     uint16_t X           = checkbox_Xpos    [CurrentPage][i];                   // X
                     uint16_t Y           = checkbox_Ypos    [CurrentPage][i];                   // Y
                     uint16_t size        = checkbox_size    [CurrentPage][i];                   // Get height
