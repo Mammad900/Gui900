@@ -1134,6 +1134,7 @@ int Centre(int Length, int wid, int Left, int CHwid) {
     }
     void changeSliderAreaHeight(int page, int i, uint16_t val){
         slider_touch_area_height[page][i]=val;  // Checking if it is changed isn't effecient here. Checking takes almost the same time as updating value.
+        // As it isn't about the appearance, it doesn't need redraw.
     }
     int  changeSliderValue(int page, int i, int val, bool changeOther=false){
         // You may have a few questions here.
@@ -1170,7 +1171,8 @@ int Centre(int Length, int wid, int Left, int CHwid) {
                                 slider_width[page][i] -
                                     slider_thumb_width[page][i]);
             slider_value[page][i]=unMapped;
-            drawSlider(page,i);
+            if(CurrentPage==page)
+                drawSlider(page,i);
         }
         return val;
     }
@@ -1200,7 +1202,8 @@ int Centre(int Length, int wid, int Left, int CHwid) {
                 min=min(value,min);
             }
             slider_min[page][i]=min;
-            drawSlider(page,i);
+            if(CurrentPage==page)
+                drawSlider(page,i);
         }
     }
     int  changeSliderMaximum(int page,int i, int val, bool changeOther=false){
@@ -1229,7 +1232,8 @@ int Centre(int Length, int wid, int Left, int CHwid) {
                 max=max(value,max);
             }
             slider_max[page][i]=max;
-            drawSlider(page,i);
+            if(CurrentPage==page)
+                drawSlider(page,i);
         }
     }
     void changeSliderLeftColor(int page,int i,uint16_t val){
