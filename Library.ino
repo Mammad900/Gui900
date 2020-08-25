@@ -1105,15 +1105,23 @@ int Centre(int Length, int wid, int Left, int CHwid) {
     void changeSliderWidth(int page,int i,uint16_t val){
         if (slider_width[page][i] != val) { // Only change the value if it is really changed
             HCT
+            int value=getSliderValue(page,i);
             if (CurrentPage == page) { // Redraw the slider only if it's on the current page
                 if (val < slider_width[page][i]) { // Undrawing if the new slider became larger is just a waste of time.
                     undrawSlider(page, i);
                 }
                 slider_width[page][i] = val; // Assign the value
+                slider_value[page][i] =
+                    map(value, min, max, 0,
+                        slider_width[page][i] - slider_thumb_width[page][i]);
                 drawSlider(page, i); // Draw the new slider
             }
             else {
-                slider_width[page][i] = val; // Just assign the var if it is invisible
+              slider_width[page][i] =
+                  val; // Just assign the var if it is invisible
+              slider_value[page][i] =
+                  map(value, min, max, 0,
+                      slider_width[page][i] - slider_thumb_width[page][i]);
             }
         }
     }
@@ -1195,7 +1203,7 @@ int Centre(int Length, int wid, int Left, int CHwid) {
                                         0,
                                         slider_width[page][i] -
                                             slider_thumb_width[page][i]);
-                    slider_value=unMapped;
+                    slider_value[page][i]=unMapped;
                 }
             }
             else{
@@ -1225,7 +1233,7 @@ int Centre(int Length, int wid, int Left, int CHwid) {
                                         0,
                                         slider_width[page][i] -
                                             slider_thumb_width[page][i]);
-                    slider_value=unMapped;
+                    slider_value[page][i]=unMapped;
                 }
             }
             else{
