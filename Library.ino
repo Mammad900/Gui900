@@ -1203,6 +1203,35 @@ int Centre(int Length, int wid, int Left, int CHwid) {
             drawSlider(page,i);
         }
     }
+    int  changeSliderMaximum(int page,int i, int val, bool changeOther=false){
+        int max=slider_max[page][i];
+        if(max!=val){
+            int min=slider_min[page][i];
+            int value = map(slider_value[page][i], // Input value
+                            0,                     // Input minimum
+                            slider_width[page][i] -
+                                slider_thumb_width[page][i], // Input maximum
+                            min,  // Output minimum
+                            max); // Output maximum
+            if(changeOther){
+                if(max<value){
+                    value=max;
+                    int unMapped = map( value,
+                                        min,
+                                        max,
+                                        0,
+                                        slider_width[page][i] -
+                                            slider_thumb_width[page][i]);
+                    slider_value=unMapped;
+                }
+            }
+            else{
+                max=max(value,max);
+            }
+            slider_max[page][i]=max;
+            drawSlider(page,i);
+        }
+    }
 #endif
 void navigatePage( int page , int transition){ // Navigates to another page
     HCT
