@@ -1296,6 +1296,24 @@ int Centre(int Length, int wid, int Left, int CHwid) {
                 drawSlider(page,i);
         }
     }
+    void changeSliderEnabled(int page,int i, bool val){
+        if(slider_enabled[page][i]!=val){
+            slider_enabled[page][i]=val;
+            if(CurrentPage=page)
+                drawSlider(page,i);
+        }
+    }
+    void changeSliderVisible(int page,int i, bool val){
+        if(slider_visible[page][i]!=val){
+            slider_visible[page][i]=val;
+            if(CurrentPage=page){
+                if(val)
+                    drawSlider(page,i);
+                else
+                    undrawSlider(page,i);
+            }
+        }
+    }
 #endif
 void navigatePage( int page , int transition){ // Navigates to another page
     HCT
