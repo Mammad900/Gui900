@@ -13,7 +13,7 @@
 //     3. Using changeBrightness(), which is the easiest, the least interfering, and the most readable method.
 byte brightness=255;
 
-// Fonts will fill a lot of flash memory (more than 75%)
+// Fonts will fill a lot of flash memory (up to 40KB)
 // So apps written with this library won't fit in small flash memories.
 // Uncomment this to disable FreeSans fonts and use NULL instead,
 // this releases a lot of program memory. (EXPERIMENTAL)
