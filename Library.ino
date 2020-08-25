@@ -1232,6 +1232,56 @@ int Centre(int Length, int wid, int Left, int CHwid) {
             drawSlider(page,i);
         }
     }
+    void changeSliderLeftColor(int page,int i,uint16_t val){
+        if(slider_color_left[page][i]!=val){
+            HCT
+            slider_color_left[page][i] = val;
+            if (CurrentPage == page)
+                drawSlider(page, i);
+        }
+    }
+    void changeSliderRightColor(int page,int i,uint16_t val){
+        if(slider_color_right[page][i]!=val){
+            HCT
+            slider_color_right[page][i] = val;
+            if (CurrentPage == page)
+                drawSlider(page, i);
+        }
+    }
+    void changeSliderThumbColor(int page,int i,uint16_t val){
+        if(slider_color_thumb[page][i]!=val){
+            HCT
+            slider_color_thumb[page][i] = val;
+            if (CurrentPage == page)
+                drawSlider(page, i);
+        }
+    }
+    void changeSliderBorderColor(int page,int i,uint16_t val){
+        if(slider_color_border[page][i]!=val){
+            HCT
+            slider_color_border[page][i] = val;
+            if (CurrentPage == page)
+                drawSlider(page, i);
+        }
+    }
+    void changeSliderBackgroundColor(int page,int i,uint16_t val){
+        if((slider_color_left[page][i]!=val)||(slider_color_right[page][i]!=val)){
+            HCT
+            slider_color_left[page][i] = val;
+            slider_color_right[page][i] = val;
+            if (CurrentPage == page)
+                drawSlider(page, i);
+        }
+    }
+    void changeSliderForegroundColor(int page,int i,uint16_t val){
+        if((slider_color_thumb[page][i]!=val)||(slider_color_border[page][i]!=val)){
+            HCT
+            slider_color_thumb[page][i] = val;
+            slider_color_border[page][i] = val;
+            if (CurrentPage == page)
+                drawSlider(page, i);
+        }
+    }
 #endif
 void navigatePage( int page , int transition){ // Navigates to another page
     HCT
