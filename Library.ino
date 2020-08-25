@@ -1170,8 +1170,38 @@ int Centre(int Length, int wid, int Left, int CHwid) {
                                 slider_width[page][i] -
                                     slider_thumb_width[page][i]);
             slider_value[page][i]=unMapped;
+            drawSlider(page,i);
         }
         return val;
+    }
+    int  changeSliderMinimum(int page,int i, int val, bool changeOther=false){
+        int min=slider_min[page][i];
+        if(min!=val){
+            int max=slider_max[page][i];
+            int value = map(slider_value[page][i], // Input value
+                            0,                     // Input minimum
+                            slider_width[page][i] -
+                                slider_thumb_width[page][i], // Input maximum
+                            min,  // Output minimum
+                            max); // Output maximum
+            if(changeOther){
+                if(min>value){
+                    value=min;
+                    int unMapped = map( value,
+                                        min,
+                                        max,
+                                        0,
+                                        slider_width[page][i] -
+                                            slider_thumb_width[page][i]);
+                    slider_value=unMapped;
+                }
+            }
+            else{
+                min=min(value,min);
+            }
+            slider_min[page][i]=min;
+            drawSlider(page,i);
+        }
     }
 #endif
 void navigatePage( int page , int transition){ // Navigates to another page
