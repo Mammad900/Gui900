@@ -1112,7 +1112,7 @@ int Centre(int Length, int wid, int Left, int CHwid) {
                 }
                 slider_width[page][i] = val; // Assign the value
                 slider_value[page][i] =
-                    map(value, min, max, 0,
+                    map(value, slider_min[page][i], slider_max[page][i], 0,
                         slider_width[page][i] - slider_thumb_width[page][i]);
                 drawSlider(page, i); // Draw the new slider
             }
@@ -1120,7 +1120,7 @@ int Centre(int Length, int wid, int Left, int CHwid) {
               slider_width[page][i] =
                   val; // Just assign the var if it is invisible
               slider_value[page][i] =
-                  map(value, min, max, 0,
+                  map(value, slider_min[page][i], slider_max[page][i], 0,
                       slider_width[page][i] - slider_thumb_width[page][i]);
             }
         }
