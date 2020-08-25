@@ -1282,6 +1282,16 @@ int Centre(int Length, int wid, int Left, int CHwid) {
                 drawSlider(page, i);
         }
     }
+    void changeSliderThumbWidth(int page,int i, uint16_t val){
+        if(slider_thumb_width[page][i]!=val){
+            if(val>slider_width[page][i]){
+                return;
+            }
+            slider_thumb_width[page][i]=val;
+            if(CurrentPage=page)
+                drawSlider(page,i);
+        }
+    }
 #endif
 void navigatePage( int page , int transition){ // Navigates to another page
     HCT
