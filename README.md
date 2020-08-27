@@ -1,4 +1,3 @@
-
 # Arduino TFT GUI library
 
 Using this library, you can make an application with a nice UI in just a few minutes. You can make a better interface with a more readable code, and save time and energy.  
@@ -6,7 +5,7 @@ Just say how your app should look like and what should it do, and the library wi
 
 ## Instructions
 
-To create an application using this GUI library, you should:
+To create an application using this GUI library, you have to:
 
 1. Open Arduino IDE and install MCUFRIEND_kbv , Adafruit GFX and Adafruit-touchscreen using library manager
 2. Create a new sketch
