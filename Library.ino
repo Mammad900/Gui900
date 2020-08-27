@@ -1078,6 +1078,251 @@ int Centre(int Length, int wid, int Left, int CHwid) {
                    slider_min[page][i],                                 // Output minimum
                    slider_max[page][i]);                                // Output maximum
     }
+    void changeSliderXPos(int page,int i,uint16_t val){
+        if(slider_Xpos[page][i]!=val){
+            HCT
+            if (CurrentPage == page){
+                undrawSlider(page, i);
+                slider_Xpos[page][i] = val;
+                drawSlider(page, i);
+            }
+            else
+                slider_Xpos[page][i] = val;
+        }
+    }
+    void changeSliderYPos(int page,int i,uint16_t val){
+        if(slider_Ypos[page][i]!=val){
+            HCT
+            if (CurrentPage == page){
+                undrawSlider(page, i);
+                slider_Ypos[page][i] = val;
+                drawSlider(page, i);
+            }
+            else
+                slider_Ypos[page][i] = val;
+        }
+    }
+    void changeSliderWidth(int page,int i,uint16_t val){
+        if (slider_width[page][i] != val) { // Only change the value if it is really changed
+            HCT
+            int value=getSliderValue(page,i);
+            if (CurrentPage == page) { // Redraw the slider only if it's on the current page
+                if (val < slider_width[page][i]) { // Undrawing if the new slider became larger is just a waste of time.
+                    undrawSlider(page, i);
+                }
+                slider_width[page][i] = val; // Assign the value
+                slider_value[page][i] =
+                    map(value, slider_min[page][i], slider_max[page][i], 0,
+                        slider_width[page][i] - slider_thumb_width[page][i]);
+                drawSlider(page, i); // Draw the new slider
+            }
+            else {
+              slider_width[page][i] =
+                  val; // Just assign the var if it is invisible
+              slider_value[page][i] =
+                  map(value, slider_min[page][i], slider_max[page][i], 0,
+                      slider_width[page][i] - slider_thumb_width[page][i]);
+            }
+        }
+    }
+    void changeSliderHeight(int page,int i,uint16_t val){
+        if (slider_height[page][i] != val) { // Only change the value if it is really changed
+            HCT
+            if (CurrentPage == page) { // Redraw the slider only if it's on the current page
+                if (val < slider_height[page][i]) { // Undrawing if the new slider became larger is just a waste of time.
+                    undrawSlider(page, i);
+                }
+                slider_height[page][i] = val; // Assign the value
+                drawSlider(page, i); // Draw the new slider
+            }
+            else {
+                slider_height[page][i] = val; // Just assign the var if it is invisible
+            }
+        }
+    }
+    void changeSliderAreaHeight(int page, int i, uint16_t val){
+        slider_touch_area_height[page][i]=val;  // Checking if it is changed isn't effecient here. Checking takes almost the same time as updating value.
+        // As it isn't about the appearance, it doesn't need redraw.
+    }
+    int  changeSliderValue(int page, int i, int val, bool changeOther=false){
+        // You may have a few questions here.
+        // Q: Why does it return int?
+        //  A: Because the value is constrained to min&max. It returns the constrained value.
+        // Q: Why is value type int and not uint16_t?
+        //  A: 1. It must support negative numbers 2. Arduino Due can do 32-bit operations in one instruction, and it is better to use 32-bit. and int is 32-bit in arduino Due.
+        // Q: What is changeOther?
+        //  A: If it is true and given value is out of range, the range will be resized to fit into it. if it is false, the value will be constrained.
+        int min=slider_min[page][i];
+        int max=slider_max[page][i];
+        int value = map(slider_value[page][i], // Input value
+                        0,                     // Input minimum
+                        slider_width[page][i] -
+                            slider_thumb_width[page][i], // Input maximum
+                        min,  // Output minimum
+                        max); // Output maximum
+        if(value!=val){// It is changed
+            if(changeOther){
+                if(min>val){
+                    slider_min[page][i]=val;
+                }
+                if(max<val){
+                    slider_max[page][i]=val;
+                }
+            }
+            else{
+                val=constrain(val,min,max);
+            }
+            int unMapped = map( val,
+                                min,
+                                max,
+                                0,
+                                slider_width[page][i] -
+                                    slider_thumb_width[page][i]);
+            slider_value[page][i]=unMapped;
+            if(CurrentPage==page)
+                drawSlider(page,i);
+        }
+        return val;
+    }
+    int  changeSliderMinimum(int page,int i, int val, bool changeOther=false){
+        int min=slider_min[page][i];
+        if(min!=val){
+            int max=slider_max[page][i];
+            int value = map(slider_value[page][i], // Input value
+                            0,                     // Input minimum
+                            slider_width[page][i] -
+                                slider_thumb_width[page][i], // Input maximum
+                            min,  // Output minimum
+                            max); // Output maximum
+            if(changeOther){
+                if(min>value){
+                    value=min;
+                    int unMapped = map( value,
+                                        min,
+                                        max,
+                                        0,
+                                        slider_width[page][i] -
+                                            slider_thumb_width[page][i]);
+                    slider_value[page][i]=unMapped;
+                }
+            }
+            else{
+                min=min(value,min);
+            }
+            slider_min[page][i]=min;
+            if(CurrentPage==page)
+                drawSlider(page,i);
+        }
+    }
+    int  changeSliderMaximum(int page,int i, int val, bool changeOther=false){
+        int max=slider_max[page][i];
+        if(max!=val){
+            int min=slider_min[page][i];
+            int value = map(slider_value[page][i], // Input value
+                            0,                     // Input minimum
+                            slider_width[page][i] -
+                                slider_thumb_width[page][i], // Input maximum
+                            min,  // Output minimum
+                            max); // Output maximum
+            if(changeOther){
+                if(max<value){
+                    value=max;
+                    int unMapped = map( value,
+                                        min,
+                                        max,
+                                        0,
+                                        slider_width[page][i] -
+                                            slider_thumb_width[page][i]);
+                    slider_value[page][i]=unMapped;
+                }
+            }
+            else{
+                max=max(value,max);
+            }
+            slider_max[page][i]=max;
+            if(CurrentPage==page)
+                drawSlider(page,i);
+        }
+    }
+    void changeSliderLeftColor(int page,int i,uint16_t val){
+        if(slider_color_left[page][i]!=val){
+            HCT
+            slider_color_left[page][i] = val;
+            if (CurrentPage == page)
+                drawSlider(page, i);
+        }
+    }
+    void changeSliderRightColor(int page,int i,uint16_t val){
+        if(slider_color_right[page][i]!=val){
+            HCT
+            slider_color_right[page][i] = val;
+            if (CurrentPage == page)
+                drawSlider(page, i);
+        }
+    }
+    void changeSliderThumbColor(int page,int i,uint16_t val){
+        if(slider_color_thumb[page][i]!=val){
+            HCT
+            slider_color_thumb[page][i] = val;
+            if (CurrentPage == page)
+                drawSlider(page, i);
+        }
+    }
+    void changeSliderBorderColor(int page,int i,uint16_t val){
+        if(slider_color_border[page][i]!=val){
+            HCT
+            slider_color_border[page][i] = val;
+            if (CurrentPage == page)
+                drawSlider(page, i);
+        }
+    }
+    void changeSliderBackgroundColor(int page,int i,uint16_t val){
+        if((slider_color_left[page][i]!=val)||(slider_color_right[page][i]!=val)){
+            HCT
+            slider_color_left[page][i] = val;
+            slider_color_right[page][i] = val;
+            if (CurrentPage == page)
+                drawSlider(page, i);
+        }
+    }
+    void changeSliderForegroundColor(int page,int i,uint16_t val){
+        if((slider_color_thumb[page][i]!=val)||(slider_color_border[page][i]!=val)){
+            HCT
+            slider_color_thumb[page][i] = val;
+            slider_color_border[page][i] = val;
+            if (CurrentPage == page)
+                drawSlider(page, i);
+        }
+    }
+    void changeSliderThumbWidth(int page,int i, uint16_t val){
+        if(slider_thumb_width[page][i]!=val){
+            if(val>slider_width[page][i]){
+                return;
+            }
+            slider_thumb_width[page][i]=val;
+            if(CurrentPage==page)
+                drawSlider(page,i);
+        }
+    }
+    void changeSliderEnabled(int page,int i, bool val){
+        if(slider_enabled[page][i]!=val){
+            slider_enabled[page][i]=val;
+            if(CurrentPage==page){
+                drawSlider(page,i);
+            }
+        }
+    }
+    void changeSliderVisible(int page,int i, bool val){
+        if(slider_visible[page][i]!=val){
+            slider_visible[page][i]=val;
+            if(CurrentPage==page){
+                if(val)
+                    drawSlider(page,i);
+                else
+                    undrawSlider(page,i);
+            }
+        }
+    }
 #endif
 void navigatePage( int page , int transition){ // Navigates to another page
     HCT
