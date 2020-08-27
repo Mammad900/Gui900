@@ -920,46 +920,6 @@ int Centre(int Length, int wid, int Left, int CHwid) {
         tft.getTextBounds(checkbox_text[page][i], x, y, &X1, &Y1, &W, &H); // Calculate text size
         tft.fillRect(checkbox_Xpos[page][i],checkbox_Ypos[page][i],size+10+W,size,page_backColors[page]); // Fill the check-box with page background color
     }
-    void changeCheckBoxXPos(int page, int i, uint16_t val){
-        if(checkbox_Xpos[page][i]!=val){
-            HCT
-            if(CurrentPage==page){
-                undrawCheckBox(page,i);
-                checkbox_Xpos[page][i]=val;
-                drawCheckBox(page,i);
-            }
-            else{
-                checkbox_Xpos[page][i]=val;
-            }
-        }
-    }
-    void changeCheckBoxYPos(int page, int i, uint16_t val){
-        if(checkbox_Ypos[page][i]!=val){
-            HCT
-            if(CurrentPage==page){
-                undrawCheckBox(page,i);
-                checkbox_Ypos[page][i]=val;
-                drawCheckBox(page,i);
-            }
-            else{
-                checkbox_Ypos[page][i]=val;
-            }
-        }
-        }
-    }
-    void changeCheckBoxText(int page, int i, uint16_t val){
-        if(checkbox_text[page][i]!=val){
-            HCT
-            if(CurrentPage==page){
-                undrawCheckBox(page,i);
-                checkbox_text[page][i]=val;
-                drawCheckBox(page,i);
-            }
-            else{
-                checkbox_text[page][i]=val;
-            }
-        }
-    }
     void changeCheckBoxChecked(int page,int i,bool val){ // Checks or unchecks a check-box
         if (checkbox_checked[page][i] != val) { // Run the code only if the value has changed
             HCT
