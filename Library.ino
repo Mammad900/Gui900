@@ -977,7 +977,7 @@ int Centre(int Length, int wid, int Left, int CHwid) {
             HCT
             checkbox_checkColor[page][i]=val;
             if(CurrentPage==page){
-                drawSlider(page,i);
+                drawCheckBox(page,i);
             }
         }
     }
@@ -986,7 +986,7 @@ int Centre(int Length, int wid, int Left, int CHwid) {
             HCT
             checkbox_textColor[page][i]=val;
             if(CurrentPage==page){
-                drawSlider(page,i);
+                drawCheckBox(page,i);
             }
         }
     }
@@ -995,7 +995,7 @@ int Centre(int Length, int wid, int Left, int CHwid) {
             HCT
             checkbox_boxColor[page][i]=val;
             if(CurrentPage==page){
-                drawSlider(page,i);
+                drawCheckBox(page,i);
             }
         }
     }
@@ -1004,7 +1004,7 @@ int Centre(int Length, int wid, int Left, int CHwid) {
             HCT
             checkbox_boxBorder[page][i]=val;
             if(CurrentPage==page){
-                drawSlider(page,i);
+                drawCheckBox(page,i);
             }
         }
     }
