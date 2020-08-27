@@ -6,7 +6,7 @@ Just say how your app should look like and what should it do, and the library wi
 ## Features
 
 * **Support for multi-page programs**  
-  You can add as many as 32767 pages
+  You can add as many as 32767 pages if you have enough RAM
 * **Support for button, label, check-box and slider**
 * **Ability to include another sketch in the program (experimental)**  
   Just paste the code of the second sketch, rename the functions and variables to avoid conflicts, and call `runsketch(setup,loop)`
