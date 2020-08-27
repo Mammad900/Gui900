@@ -946,7 +946,7 @@ int Centre(int Length, int wid, int Left, int CHwid) {
             }
         }
     }
-    void changeCheckBoxText(int page, int i, uint16_t val){
+    void changeCheckBoxText(int page, int i, String val){
         if(checkbox_text[page][i]!=val){
             HCT
             if(CurrentPage==page){
