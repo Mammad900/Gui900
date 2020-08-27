@@ -960,6 +960,28 @@ int Centre(int Length, int wid, int Left, int CHwid) {
             }
         }
     }
+    void changeCheckBoxSize(int page, int i, uint16_t val){
+        if(checkbox_size[page][i]!=val){
+            HCT
+            if(CurrentPage==page){
+                undrawCheckBox(page,i);
+                checkbox_size[page][i]=val;
+                drawCheckBox(page,i);
+            }
+            else{
+                checkbox_size[page][i]=val;
+            }
+        }
+    }
+    void changeCheckBoxCheckColor(int page, int i, uint16_t val){
+        if(checkbox_checkColor[page][i]!=val){
+            HCT
+            checkbox_checkColor[page][i]=val;
+            if(CurrentPage==page){
+                drawSlider(page,i);
+            }
+        }
+    }
     void changeCheckBoxChecked(int page,int i,bool val){ // Checks or unchecks a check-box
         if (checkbox_checked[page][i] != val) { // Run the code only if the value has changed
             HCT
