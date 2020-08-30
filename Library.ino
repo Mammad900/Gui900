@@ -41,7 +41,7 @@ bool quit; // Used for runsketch()
     void(* Reset) (void) = 0;   // Soft-resets Arduino microcontroller
     bool Touch_getXY(void);     // Reads touch. If touch is detected, returns true and assigns pixel_x , pixel_y and pixel_z variables to touched coordinates
     int Centre(int Length, int wid = AUTO, int Left = 0, int CHwid = 6); //Calculates the position needed to align an object to the centre
-    bool inRegion(int Y, int Bot, int Top = 0, int X = 120, int Left = 0, int Right = 240); //If given coordinates are in the given range, returns true.
+    bool inRegion(int Y, int Bot, int Top = 0, int X = 120, int Left = 0, int Right = AUTO); //If given coordinates are in the given range, returns true.
     int calculateListY(int num); // Calculates the Y position of a button with the given number that is in a list (not used by the library), you can use it.
     void start(); // Starts TFT screen and draws page 0. Call only once and at the end of setup().
     void navigatePage( int page , int transition = DEFAULT); // Navigates to a page. This can be used in loop(). It is implicitly called by start() and recalling it causes another draw (only waste of time)
@@ -220,14 +220,17 @@ void changeBrightness(byte value){
 }
 //If given coordinates are in the given range, returns true.
 bool inRegion(int Y, int Bot, int Top, int X, int Left, int Right) {
-  if ((
+    if(Right==AUTO){
+        Right=tft.height();
+    }
+    if ((
         X >= Left &&
         X <= Right &&
         Y >= Top &&
         Y <= Bot ))
-  {
-    return true;
-  }
+    {
+        return true;
+    }
   else return false;
 }
 //Calculates the position needed to align an object to the centre
@@ -1153,6 +1156,7 @@ int Centre(int Length, int wid, int Left, int CHwid) {
         tft.fillRect(slider_Xpos[page][i],slider_Ypos[page][i],slider_width[page][i],slider_height[page][i],page_backColors[page]); // 'Fill' the border
     }
     int getSliderValue(uint16_t page,uint16_t i,int min,int max){
+        //// DEPRECATED DEPRECATED DEPRECATED DEPRECATED DEPRECATED DEPRECATED ////
         return map(slider_value[page][i],                               // Input value
                    0,                                                   // Input minimum
                    slider_width[page][i] - slider_thumb_width[page][i], // Input maximum
