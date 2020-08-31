@@ -4,6 +4,9 @@
 
 **IMPROVED** `checkPage()` is more modular
 
+**FIXED** Buttons can't be clicked when invisible  
+**FIXED** Sliders can't be changed when invisible
+
 ## v0.0.2
 
 **ADDED** Completed Check-box modifier functions  
