@@ -542,7 +542,7 @@ int Centre(int Length, int wid, int Left, int CHwid) {
         }
     }
     void checkButtonTouched(int page, int i){
-        if (button_enabled[page][i]) { // Disabled buttons cannot be clicked
+        if ((button_enabled[page][i])&&(button_visible[page][i])) { // Disabled buttons cannot be clicked
             uint16_t X           = button_Xpos      [page][i]; // X
             uint16_t Y           = button_Ypos      [page][i]; // Y
             uint16_t Width       = button_width     [page][i]; // Get width
@@ -1472,7 +1472,7 @@ int Centre(int Length, int wid, int Left, int CHwid) {
         }
     }
     void checkSliderTouched(int page, int i){
-        if (slider_enabled[page][i]) { // Disabled sliders cannot be changed
+        if ((slider_enabled[page][i])&&(slider_visible[page][i])) { // Disabled sliders cannot be changed
 
             uint16_t s_X                = slider_Xpos               [page][i]; // X
             uint16_t s_Y                = slider_Ypos               [page][i]; // Y
