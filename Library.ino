@@ -541,6 +541,32 @@ int Centre(int Length, int wid, int Left, int CHwid) {
             }
         }
     }
+    void checkButtonTouched(int page, int i){
+        if (button_enabled[page][i]) { // Disabled buttons cannot be clicked
+            uint16_t X           = button_Xpos      [page][i]; // X
+            uint16_t Y           = button_Ypos      [page][i]; // Y
+            uint16_t Width       = button_width     [page][i]; // Get width
+            uint16_t Height      = button_height    [page][i]; // Get height
+            // Expand macros
+            if(X==CENTER){
+                X=Centre(Width, tft.width(), 0, 1);
+            }
+            if(X==RIGHT){
+                X=tft.width()-Width;
+            }
+            if(Y==CENTER){
+                Y=Centre(Height, tft.height(), 0, 1);
+            }
+            if(Y==RIGHT){
+                Y=tft.height()-Height;
+            }
+            // Use inRegion to see if the button is pressed
+            button_pressed[page][i] = inRegion(pixel_y, Y + Height, Y, pixel_x, X, X + Width); // Check if it's in the button area
+        }
+    }
+    void checkButtonUntouched(int page, int i){
+        button_pressed[page][i] = false;
+    }
 #endif
 #ifdef LABEL
     //Label variables
@@ -1052,6 +1078,36 @@ int Centre(int Length, int wid, int Left, int CHwid) {
             }
         }
     }
+    void checkCheckBoxTouched(int page,int i){
+        if((checkbox_enabled[page][i])&&(checkbox_visible[page][i])){
+            uint16_t X           = checkbox_Xpos    [page][i];                   // X
+            uint16_t Y           = checkbox_Ypos    [page][i];                   // Y
+            uint16_t size        = checkbox_size    [page][i];                   // Get height
+            // Get width
+            int16_t x = 0, y = 0, X1, Y1;                                               // variables needed to use getTextBounds()
+            uint16_t W, H;
+            tft.getTextBounds(checkbox_text[page][i], x, y, &X1, &Y1, &W, &H);   // Calculate text size
+            uint16_t Width       = size+10+W;              // Get width
+            // Check if it was pressed
+            bool pressed=inRegion(pixel_y, Y + size , Y, pixel_x, X, X + Width);
+            if(pressed){ // Toggle states
+                if(!checkbox_lastState[page][i]){ // Only if it wasn't being touched before
+                    checkbox_checked[page][i]=!checkbox_checked[page][i]; // Toggle value
+                    bool checked=checkbox_checked[page][i]; // Get values for easy use
+                    uint16_t checkColor=checkbox_checkColor[page][i];
+                    uint16_t boxColor  =checkbox_boxColor  [page][i];
+                    // Draw the check mark
+                    int Third=size/3;
+                    tft.drawLine(X+2    ,Y+(Third*2),X+Third ,Y+size-2,(checked)?checkColor:boxColor);
+                    tft.drawLine(X+Third,Y+size-2   ,X+size-2,Y+1     ,(checked)?checkColor:boxColor);
+                }
+            }
+            checkbox_lastState[page][i]=true;
+        }
+    }
+    void checkCheckBoxUntouched(int page, int i){
+        checkbox_lastState[page][i] = false;
+    }
 #endif
 #ifdef SLIDER
     //Slider variables
@@ -1415,6 +1471,27 @@ int Centre(int Length, int wid, int Left, int CHwid) {
             }
         }
     }
+    void checkSliderTouched(int page, int i){
+        if (slider_enabled[page][i]) { // Disabled sliders cannot be changed
+
+            uint16_t s_X                = slider_Xpos               [page][i]; // X
+            uint16_t s_Y                = slider_Ypos               [page][i]; // Y
+            uint16_t s_width            = slider_width              [page][i]; // Get width
+            uint16_t s_height           = slider_height             [page][i]; // Get height
+            uint16_t s_touch_area_height= slider_touch_area_height  [page][i]; // Area height
+            uint16_t s_thumb_width      = slider_thumb_width        [page][i]; // Thumb width
+            // Calculate touch region
+            int tac=s_Y+(s_height/2);      // Touch area center
+            int tah=s_touch_area_height/2; // Half of touch area height
+            int tat=tac-tah;               // Touch area top
+            int tab=tac+tah;               // Touch area botton
+            // Was the slider pressed?
+            if(inRegion(pixel_y, tab, tat, pixel_x, s_X, s_X+s_width-s_thumb_width)){
+                slider_value[page][i]=pixel_x-s_X; // Update slider value
+                drawSlider(page,i); // Draw slider with new value
+            }
+        }
+    }
 #endif
 void navigatePage( int page , int transition){ // Navigates to another page
     HCT
@@ -1482,80 +1559,18 @@ void checkPage( ) { // Check for touches
         #endif
         #ifdef BUTTON // Handle buttons
             for (int i = 0; i < button_counts[CurrentPage]; i++) { // Iterate through buttons
-                if (button_enabled[CurrentPage][i]) { // Disabled buttons cannot be clicked
-                    uint16_t X           = button_Xpos      [CurrentPage][i]; // X
-                    uint16_t Y           = button_Ypos      [CurrentPage][i]; // Y
-                    uint16_t Width       = button_width     [CurrentPage][i]; // Get width
-                    uint16_t Height      = button_height    [CurrentPage][i]; // Get height
-                    // Expand macros
-                    if(X==CENTER){
-                        X=Centre(Width, tft.width(), 0, 1);
-                    }
-                    if(X==RIGHT){
-                        X=tft.width()-Width;
-                    }
-                    if(Y==CENTER){
-                        Y=Centre(Height, tft.height(), 0, 1);
-                    }
-                    if(Y==RIGHT){
-                        Y=tft.height()-Height;
-                    }
-                    // Use inRegion to see if the button is pressed
-                    button_pressed[CurrentPage][i] = inRegion(pixel_y, Y + Height, Y, pixel_x, X, X + Width); // Check if it's in the button area
-                }
+                checkButtonTouched(CurrentPage,i);
             }
         #endif
         // Labels are only shown, they do not handle touch.
         #ifdef CHECKBOX // Handle check-boxes
             for(int i=0;i<checkbox_counts[CurrentPage];i++){ // Iterate through check-boxes
-                if((checkbox_enabled[CurrentPage][i])&&(checkbox_visible[CurrentPage][i])){
-                    uint16_t X           = checkbox_Xpos    [CurrentPage][i];                   // X
-                    uint16_t Y           = checkbox_Ypos    [CurrentPage][i];                   // Y
-                    uint16_t size        = checkbox_size    [CurrentPage][i];                   // Get height
-                    // Get width
-                    int16_t x = 0, y = 0, X1, Y1;                                               // variables needed to use getTextBounds()
-                    uint16_t W, H;
-                    tft.getTextBounds(checkbox_text[CurrentPage][i], x, y, &X1, &Y1, &W, &H);   // Calculate text size
-                    uint16_t Width       = size+10+W;              // Get width
-                    // Check if it was pressed
-                    bool pressed=inRegion(pixel_y, Y + size , Y, pixel_x, X, X + Width);
-                    if(pressed){ // Toggle states
-                        if(!checkbox_lastState[CurrentPage][i]){ // Only if it wasn't being touched before
-                            checkbox_checked[CurrentPage][i]=!checkbox_checked[CurrentPage][i]; // Toggle value
-                            bool checked=checkbox_checked[CurrentPage][i]; // Get values for easy use
-                            uint16_t checkColor=checkbox_checkColor[CurrentPage][i];
-                            uint16_t boxColor  =checkbox_boxColor  [CurrentPage][i];
-                            // Draw the check mark
-                            int Third=size/3;
-                            tft.drawLine(X+2    ,Y+(Third*2),X+Third ,Y+size-2,(checked)?checkColor:boxColor);
-                            tft.drawLine(X+Third,Y+size-2   ,X+size-2,Y+1     ,(checked)?checkColor:boxColor);
-                        }
-                    }
-                    checkbox_lastState[CurrentPage][i]=true;
-                }
+                checkCheckBoxTouched(CurrentPage,i);
             }
         #endif
         #ifdef SLIDER // Handle sliders
             for (int i = 0; i < slider_counts[CurrentPage]; i++) { // Iterate through sliders
-                if (slider_enabled[CurrentPage][i]) { // Disabled sliders cannot be changed
-
-                    uint16_t s_X                = slider_Xpos               [CurrentPage][i]; // X
-                    uint16_t s_Y                = slider_Ypos               [CurrentPage][i]; // Y
-                    uint16_t s_width            = slider_width              [CurrentPage][i]; // Get width
-                    uint16_t s_height           = slider_height             [CurrentPage][i]; // Get height
-                    uint16_t s_touch_area_height= slider_touch_area_height  [CurrentPage][i]; // Area height
-                    uint16_t s_thumb_width      = slider_thumb_width        [CurrentPage][i]; // Thumb width
-                    // Calculate touch region
-                    int tac=s_Y+(s_height/2);      // Touch area center
-                    int tah=s_touch_area_height/2; // Half of touch area height
-                    int tat=tac-tah;               // Touch area top
-                    int tab=tac+tah;               // Touch area botton
-                    // Was the slider pressed?
-                    if(inRegion(pixel_y, tab, tat, pixel_x, s_X, s_X+s_width-s_thumb_width)){
-                        slider_value[CurrentPage][i]=pixel_x-s_X; // Update slider value
-                        drawSlider(CurrentPage,i); // Draw slider with new value
-                    }
-                }
+            checkSliderTouched(CurrentPage,i);
             }
         #endif
     }
@@ -1564,7 +1579,7 @@ void checkPage( ) { // Check for touches
         // Set all pressed states to false
         for (int k = 0; k < PAGES; k++) {
             for (int j = 0; j < button_counts[k]; j++) {
-                button_pressed[k][j] = false;
+                checkButtonUntouched(k,j);
             }
         }
     #endif
@@ -1572,10 +1587,12 @@ void checkPage( ) { // Check for touches
         // Set all pressed states to false
         for (int k = 0; k < PAGES; k++) {
             for (int j = 0; j < checkbox_counts[k]; j++) {
-                checkbox_lastState[k][j] = false;
+                checkCheckBoxUntouched(k,j);
             }
         }
     #endif
+
+
     #ifdef SCREENTIMEOUT
         // Did the last touch occur in at least SCREENTIMEOUT seconds ago?
         if(-(lastTouch-millis())>(SCREENTIMEOUT*1000)){
