@@ -7,6 +7,9 @@
 **FIXED** Buttons can't be clicked when invisible  
 **FIXED** Sliders can't be changed when invisible
 
+**CHANGED** `changeBrightness()` does not map to 12-bit for DAC pins on Arduino Due  
+**CHANGED** removed some unneeded description from `config.ino`
+
 ## v0.0.2
 
 **ADDED** Completed Check-box modifier functions  
