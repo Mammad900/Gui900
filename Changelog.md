@@ -2,6 +2,9 @@
 
 ## Not released yet
 
+**ADDED** Added option to disable dimming disabled elements using a config
+
+**IMPROVED** 5 configs are optional: `PAGES`, `Orientation`, `MINPRESSURE`, `MAXPRESSURE` and `BACKLIGHT_PIN`  
 **IMPROVED** `checkPage()` is more modular
 
 **FIXED** Buttons can't be clicked when invisible  
