@@ -1,4 +1,5 @@
 // Number of pages
+// Default: 10
 #define PAGES 6
 
 // The screen time-out in seconds
@@ -15,6 +16,9 @@ byte brightness=255;
 // Uncomment this to disable FreeSans fonts and use NULL instead,
 // this releases a lot of program memory. (EXPERIMENTAL)
 //#define DISABLEFONTS
+
+// If you uncomment this, disabled elements will not be dimmed
+//#define DONOTDIMDISABLED
 
 // Uncomment this to keep screen on/off code when screen timeout is disabled
 // By default, when you comment SCREENTIMEOUT, the scrOn() and scrOff() methods will become unavailable.
@@ -34,7 +38,8 @@ uint16_t page_backColors[PAGES]{0,0,0,0,0,0};
 
 //The pin to control tft backlight
 //It is recommended to use a PWM pin.
-//If you use an UNO shield on a mega, pins 46, 47, 48 are recommended
+//If you use an UNO shield on a mega2560, pins 46, 47, 48 are recommended
+//Just remove/comment it if you don't have such a pin
 #define BACKLIGHT_PIN 46
 
 // Maximum buttons in a page. Too low value causes (miserable) bugs, too much causes high SRAM usage.
@@ -57,12 +62,14 @@ uint16_t page_backColors[PAGES]{0,0,0,0,0,0};
 // Orientation of the TFT
 // 0:Portrait (0°)
 // 1:Landscape(90°)
-// 2:Portrait (180°)
-// 3:Landscape(270°)
+// 2:Portrait reverse (180°)
+// 3:Landscape reverse (270°)
+// Default: Portrait
 #define Orientation 0
 
 // Maximum and minimum pressure needed to instigate touch
 // Edit this only if you are familiar with Adafruit touch screen library
+// They are optional
 #define MINPRESSURE 10
 #define MAXPRESSURE 1000
 

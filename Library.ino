@@ -1,3 +1,21 @@
+
+//Default configs
+    #ifndef PAGES
+        #define PAGES 10
+    #endif
+    #ifndef Orientation
+        #define Orientation 0
+    #endif
+    #ifndef MINPRESSURE
+        #define MINPRESSURE 50
+    #endif
+    #ifndef MAXPRESSURE
+        #define MAXPRESSURE 1000
+    #endif
+    #ifndef BACKLIGHT_PIN
+        #define BACKLIGHT_PIN -1
+    #endif
+
 bool quit; // Used for runsketch()
 //Libraries
     #include <Adafruit_GFX.h>                       // Core graphics library, dependency of MCUFRIEND_kbv
@@ -183,13 +201,17 @@ bool Touch_getXY(void) {
     }
     return false; // Wasnt touhed.
 }
-// Gets a color value, and returns a new color value with half R,G,B values
-uint16_t dim(uint16_t color){ 
-      int R = ((color & 0xF800) >> 9);  // Get half of Red
-      int G = ((color & 0x7E0) >> 4);   // Get half of green
-      int B = ((color & 0x1F) << 2);    // Get half of blue
-      return tft.color565(R, G, B); //Re-assemble the color
-}
+#ifndef DONOTDIMDISABLED
+    // Gets a color value, and returns a new color value with half R,G,B values
+    uint16_t dim(uint16_t color){ 
+        int R = ((color & 0xF800) >> 9);  // Get half of Red
+        int G = ((color & 0x7E0) >> 4);   // Get half of green
+        int B = ((color & 0x1F) << 2);    // Get half of blue
+        return tft.color565(R, G, B); //Re-assemble the color
+    }
+    #else
+    #define dim(x) (x)
+#endif
 // Starts TFT screen and draws page 0. Call only once and at the end of setup().
 void start() {
     pinMode(BACKLIGHT_PIN,OUTPUT); // Set the backlight pin as an output
