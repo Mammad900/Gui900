@@ -208,15 +208,7 @@ void start() {
 // Changes the brightness of the TFT screen using backlight control
 void changeBrightness(byte value){
     brightness=value; // Update brightness var
-    #ifndef __SAM3X8E__
-    // Not Due
     analogWrite(BACKLIGHT_PIN,brightness*BC); // Write to the backlight pin
-    #else
-    // Due
-    if((BACKLIGHT_PIN==DAC0)||(BACKLIGHT_PIN==DAC1)){
-        analogWrite(BACKLIGHT_PIN,brightness*BC*16); // DAC is from 0 to 4096, so it should be mapped to the correct value
-    }
-    #endif
 }
 //If given coordinates are in the given range, returns true.
 bool inRegion(int Y, int Bot, int Top, int X, int Left, int Right) {
