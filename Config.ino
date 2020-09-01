@@ -7,10 +7,7 @@
 #define SCREENTIMEOUT 30
 
 // The screen brightness that is controlled by BACKLIGHT_PIN
-// There are several ways to change display brightness dynamically:
-//     1. Using analogWrite(), but interferes with the library, e.g. screen-off animation.
-//     2. Setting brightness, but it does not change the backlight pin, and using method 1 after that will still interfere .
-//     3. Using changeBrightness(), which is the easiest, the least interfering, and the most readable method.
+// Use changeBrightness() to dinamically change brightness
 byte brightness=255;
 
 // Fonts will fill a lot of flash memory (up to 40KB)
