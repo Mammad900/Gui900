@@ -1153,7 +1153,7 @@ int Centre(int Length, int wid, int Left, int CHwid) {
             AreaHeight=H*3; // Three times height
         }
         if(thumbWidth==AUTO){ // Expand AUTO macro
-            thumbWidth=H*0.7; // 70% of height. For 10px height, it is 7px.
+            thumbWidth=min(H,W)*0.7; // 70% of height. For 10px height, it is 7px.
         }
         if(W==AUTO){ // Expand AUTO macro for width
             W=tft.width()-(X*2); // Container width minus two times X position
@@ -1509,7 +1509,8 @@ int Centre(int Length, int wid, int Left, int CHwid) {
                 int tat=tac-tah;               // Touch area top
                 int tab=tac+tah;               // Touch area botton
                 // Was the slider pressed?
-                if(inRegion(pixel_y, tab, tat, pixel_x, s_X, s_X+s_width-s_thumb_width)){
+                if(inRegion(pixel_y, tab, tat, pixel_x, s_X, s_X+s_width)){
+                    int a=min(pixel_x,(s_X+s_width-s_thumb_width))
                     slider_value[page][i]=pixel_x-s_X; // Update slider value
                     drawSlider(page,i); // Draw slider with new value
                 }
