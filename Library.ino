@@ -1207,12 +1207,20 @@ int Centre(int Length, int wid, int Left, int CHwid) {
                 s_color_right  =dim(s_color_right  ); // Right color
                 s_color_thumb  =dim(s_color_thumb  ); // Thumb color
             }
-
+            
             // Draw the slider
-            tft.fillRect(s_X+1,s_Y+1,s_value-1,s_height-2,s_color_left); // Left area
-            tft.fillRect(s_X+s_value,s_Y+1,s_thumb_width,s_height-2,s_color_thumb); // Thumb
-            tft.fillRect(s_X+s_value+s_thumb_width,s_Y+1,s_width-s_value-s_thumb_width-1,s_height-2,s_color_right); // Right area
-            tft.drawRect(s_X,s_Y,s_width,s_height,s_color_border); // Border
+            if(s_height>s_width){
+                tft.fillRect(s_X+1,s_Y+1,s_width-2,s_value-1,s_color_left); // Left area
+                tft.fillRect(s_X+1,s_Y+s_value,s_width-2,s_thumb_width,s_color_thumb); // Thumb
+                tft.fillRect(s_X+1,s_Y+s_value+s_thumb_width,s_width-2,s_height-s_value-s_thumb_width-1,s_color_right);
+                tft.drawRect(s_X,s_Y,s_width,s_height,s_color_border); // Border
+            }
+            else{
+                tft.fillRect(s_X+1,s_Y+1,s_value-1,s_height-2,s_color_left); // Left area
+                tft.fillRect(s_X+s_value,s_Y+1,s_thumb_width,s_height-2,s_color_thumb); // Thumb
+                tft.fillRect(s_X+s_value+s_thumb_width,s_Y+1,s_width-s_value-s_thumb_width-1,s_height-2,s_color_right); // Right area
+                tft.drawRect(s_X,s_Y,s_width,s_height,s_color_border); // Border
+            }
         }
     }
     void undrawSlider(uint16_t page,uint16_t i){
@@ -1494,15 +1502,27 @@ int Centre(int Length, int wid, int Left, int CHwid) {
             uint16_t s_height           = slider_height             [page][i]; // Get height
             uint16_t s_touch_area_height= slider_touch_area_height  [page][i]; // Area height
             uint16_t s_thumb_width      = slider_thumb_width        [page][i]; // Thumb width
-            // Calculate touch region
-            int tac=s_Y+(s_height/2);      // Touch area center
-            int tah=s_touch_area_height/2; // Half of touch area height
-            int tat=tac-tah;               // Touch area top
-            int tab=tac+tah;               // Touch area botton
-            // Was the slider pressed?
-            if(inRegion(pixel_y, tab, tat, pixel_x, s_X, s_X+s_width-s_thumb_width)){
-                slider_value[page][i]=pixel_x-s_X; // Update slider value
-                drawSlider(page,i); // Draw slider with new value
+            if(s_width>s_height){
+                // Calculate touch region
+                int tac=s_Y+(s_height/2);      // Touch area center
+                int tah=s_touch_area_height/2; // Half of touch area height
+                int tat=tac-tah;               // Touch area top
+                int tab=tac+tah;               // Touch area botton
+                // Was the slider pressed?
+                if(inRegion(pixel_y, tab, tat, pixel_x, s_X, s_X+s_width-s_thumb_width)){
+                    slider_value[page][i]=pixel_x-s_X; // Update slider value
+                    drawSlider(page,i); // Draw slider with new value
+                }
+            }
+            else{
+                int tac=s_X+(s_width/2);
+                int taw=s_touch_area_height/2;
+                int tal=tac-taw;
+                int tar=tac+taw;
+                if(inRegion(pixel_y,s_Y+s_height,s_Y,pixel_x,tal,tar)){
+                    slider_value[page][i]=pixel_y-s_Y; // Update slider value
+                    drawSlider(page,i); // Draw slider with new value
+                }
             }
         }
     }
