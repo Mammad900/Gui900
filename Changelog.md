@@ -1,5 +1,9 @@
 # Release notes
 
+## Not released yet
+
+**ADDED** Support for vertical sliders
+
 ## v0.0.3
 
 **ADDED** Added option to disable dimming disabled elements using a config
