@@ -1549,7 +1549,6 @@ int Centre(int Length, int wid, int Left, int CHwid) {
                     uint16_t boxColor=TFT_WHITE, uint16_t boxBorder=TFT_BLACK,bool enabled=true,
                     bool visible=true)
     {
-        Log(page);
         HCT
         int number = radioButton_counts[page]++; // Current label number
 
