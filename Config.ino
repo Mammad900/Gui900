@@ -61,7 +61,7 @@ uint16_t page_backColors[PAGES]{0,0,0,0,0,0};
 
 // Maximum radio-buttons in a page.
 // Comment this if you don't use any radio-buttons
-#define RADIOBUTTON 1
+#define RADIOBUTTON 2
 
 // Orientation of the TFT
 // 0:Portrait (0°)
