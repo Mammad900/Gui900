@@ -47,7 +47,7 @@ bool quit; // Used for runsketch()
     #endif
     #define CENTER 9998 // When used, position will be dynamically calculated to align the label to the center
     #define RIGHT 9999  // When used, position will be dynamically calculated to align the label to the right or bottom
-    #ifdef CHECKBOX     // Sizes for checkboxes.
+    #if defined (CHECKBOX) || defined(RADIOBUTTON)     // Sizes for checkboxes and radio buttons.
         #define SIZE9PT18PX 18  // Use 18 pixels height and FreeSans9pt7b
         #define SIZE12PT28PX 28 // Use 28 pixels height and FreeSans12pt7b
         #define SIZE18PT42PX 42 // Use 42 pixels height and FreeSans18pt7b
@@ -1510,7 +1510,7 @@ int Centre(int Length, int wid, int Left, int CHwid) {
                 int tab=tac+tah;               // Touch area botton
                 // Was the slider pressed?
                 if(inRegion(pixel_y, tab, tat, pixel_x, s_X, s_X+s_width)){
-                    int a=min(pixel_x,(s_X+s_width-s_thumb_width))
+                    int a=min(pixel_x,(s_X+s_width-s_thumb_width));
                     slider_value[page][i]=pixel_x-s_X; // Update slider value
                     drawSlider(page,i); // Draw slider with new value
                 }
@@ -1526,6 +1526,50 @@ int Centre(int Length, int wid, int Left, int CHwid) {
                 }
             }
         }
+    }
+#endif
+#ifdef RADIOBUTTON
+    // Radio-button variables
+        uint16_t radioButton_counts[PAGES];
+        uint16_t radioButton_XPos             [PAGES][RADIOBUTTON];
+        uint16_t radioButton_YPos             [PAGES][RADIOBUTTON];
+        uint16_t radioButton_size             [PAGES][RADIOBUTTON];
+        String   radioButton_text             [PAGES][RADIOBUTTON];
+        bool     radioButton_checked          [PAGES][RADIOBUTTON];
+        uint16_t radioButton_color_text       [PAGES][RADIOBUTTON];
+        uint16_t radioButton_color_box        [PAGES][RADIOBUTTON];
+        uint16_t radioButton_color_box_border [PAGES][RADIOBUTTON];
+        uint16_t radioButton_color_indicator  [PAGES][RADIOBUTTON];
+        bool     radioButton_enabled          [PAGES][RADIOBUTTON];
+        bool     radioButton_visible          [PAGES][RADIOBUTTON];
+        int      radioButton_group            [PAGES][RADIOBUTTON];
+    void addradioButton(int page, uint16_t Xpos, uint16_t Ypos, String text, int group=0, int size=SIZE12PT28PX,
+                    bool checked=false, uint16_t indicatorColor=TFT_BLACK,uint16_t textColor=TFT_WHITE,
+                    uint16_t boxColor=TFT_WHITE, uint16_t boxBorder=TFT_BLACK,bool enabled=true,
+                    bool visible=true){
+        
+        HCT
+        int number = radioButton_counts[page]++; // Current label number
+
+        // Assign variables
+        radioButton_XPos             [page][number]=Xpos;
+        radioButton_YPos             [page][number]=Ypos;
+        radioButton_text             [page][number]=text;
+        radioButton_size             [page][number]=size;
+        radioButton_color_indicator  [page][number]=indicatorColor;
+        radioButton_color_text       [page][number]=textColor;
+        radioButton_color_box        [page][number]=boxColor;
+        radioButton_color_box_border [page][number]=boxBorder;
+        radioButton_checked          [page][number]=checked;
+        radioButton_enabled          [page][number]=enabled;
+        radioButton_visible          [page][number]=visible;
+        radioButton_group            [page][number]=group;
+
+        if (started && (CurrentPage == page)) {
+          //drawRadioButton(page, number);
+        }
+
+        return number; // Return new check-box's index
     }
 #endif
 void navigatePage( int page , int transition){ // Navigates to another page
