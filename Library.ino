@@ -1709,6 +1709,35 @@ int Centre(int Length, int wid, int Left, int CHwid) {
         tft.getTextBounds(radioButton_text[page][i], x, y, &X1, &Y1, &W, &H); // Calculate text size
         tft.fillRect(radioButton_XPos[page][i],radioButton_YPos[page][i],size+10+W,size,page_backColors[page]); // Fill the check-box with page background color
     }
+    void checkRadioButtonTouched(int page, int i){
+        if((radioButton_enabled[page][i])&&(radioButton_visible[page][i])){
+            uint16_t X           = radioButton_XPos[page][i];                   // X
+            uint16_t Y           = radioButton_YPos[page][i];                   // Y
+            uint16_t size        = radioButton_size[page][i];                   // Get height
+            // Get width
+            int16_t x = 0, y = 0, X1, Y1;                                               // variables needed to use getTextBounds()
+            uint16_t W, H;
+            tft.getTextBounds(radioButton_text[page][i], x, y, &X1, &Y1, &W, &H);   // Calculate text size
+            uint16_t Width       = size+10+W;              // Get width
+            // Check if it was pressed
+            bool pressed=inRegion(pixel_y, Y + size , Y, pixel_x, X, X + Width);
+            if(pressed){ // Toggle states
+                for(int v=0;v<(radioButton_counts[page]);v++){
+                    if((radioButton_group[page][v])==(radioButton_group[page][i])){
+                        if(v==i)continue;
+                        if(radioButton_checked[page][v]){
+                            radioButton_checked[page][v]=false;
+                            drawRadioButton(page,v);
+                        }
+                    }
+                }
+                if(!radioButton_checked[page][i]){
+                    radioButton_checked[page][i]=true;
+                    drawRadioButton(page,i);
+                }
+            }
+        }
+    }
 #endif
 void navigatePage( int page , int transition){ // Navigates to another page
     HCT
@@ -1798,6 +1827,11 @@ void checkPage( ) { // Check for touches
         #ifdef SLIDER // Handle sliders
             for (int i = 0; i < slider_counts[CurrentPage]; i++) { // Iterate through sliders
             checkSliderTouched(CurrentPage,i);
+            }
+        #endif
+        #ifdef RADIOBUTTON // Handle sliders
+            for (int i = 0; i < radioButton_counts[CurrentPage]; i++) { // Iterate through radio buttons
+            checkRadioButtonTouched(CurrentPage,i);
             }
         #endif
     }
