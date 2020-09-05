@@ -1510,7 +1510,7 @@ int Centre(int Length, int wid, int Left, int CHwid) {
                 int tab=tac+tah;               // Touch area botton
                 // Was the slider pressed?
                 if(inRegion(pixel_y, tab, tat, pixel_x, s_X, s_X+s_width)){
-                    int a=min(pixel_x,(s_X+s_width-s_thumb_width))
+                    int a=min(pixel_x,(s_X+s_width-s_thumb_width));
                     slider_value[page][i]=pixel_x-s_X; // Update slider value
                     drawSlider(page,i); // Draw slider with new value
                 }
