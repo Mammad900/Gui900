@@ -29,6 +29,7 @@ bool quit; // Used for runsketch()
         #include <Fonts/FreeSans24pt7b.h>           // Huge Sans font
     #endif
 //Defines
+    #define Log(a) Serial.print(#a);Serial.print(" : ");Serial.println(a);
     #define runsketch(stp,lop) stp();while(true){lop();} // Runs an embedded sketch
     #define HCT haschanged=true; // This is the [famous] macro that makes the library aware that something has changed.
     #ifdef BUTTON       // Values used by changeButtonProperty()
@@ -47,7 +48,7 @@ bool quit; // Used for runsketch()
     #endif
     #define CENTER 9998 // When used, position will be dynamically calculated to align the label to the center
     #define RIGHT 9999  // When used, position will be dynamically calculated to align the label to the right or bottom
-    #ifdef CHECKBOX     // Sizes for checkboxes.
+    #if defined (CHECKBOX) || defined(RADIOBUTTON)     // Sizes for checkboxes and radio buttons.
         #define SIZE9PT18PX 18  // Use 18 pixels height and FreeSans9pt7b
         #define SIZE12PT28PX 28 // Use 28 pixels height and FreeSans12pt7b
         #define SIZE18PT42PX 42 // Use 42 pixels height and FreeSans18pt7b
@@ -209,7 +210,7 @@ bool Touch_getXY(void) {
         int B = ((color & 0x1F) << 2);    // Get half of blue
         return tft.color565(R, G, B); //Re-assemble the color
     }
-    #else
+#else
     #define dim(x) (x)
 #endif
 // Starts TFT screen and draws page 0. Call only once and at the end of setup().
@@ -1528,6 +1529,216 @@ int Centre(int Length, int wid, int Left, int CHwid) {
         }
     }
 #endif
+#ifdef RADIOBUTTON
+    // Radio-button variables
+        uint16_t radioButton_counts[PAGES];
+        uint16_t radioButton_XPos             [PAGES][RADIOBUTTON];
+        uint16_t radioButton_YPos             [PAGES][RADIOBUTTON];
+        uint16_t radioButton_size             [PAGES][RADIOBUTTON];
+        String   radioButton_text             [PAGES][RADIOBUTTON];
+        bool     radioButton_checked          [PAGES][RADIOBUTTON];
+        uint16_t radioButton_color_text       [PAGES][RADIOBUTTON];
+        uint16_t radioButton_color_box        [PAGES][RADIOBUTTON];
+        uint16_t radioButton_color_box_border [PAGES][RADIOBUTTON];
+        uint16_t radioButton_color_indicator  [PAGES][RADIOBUTTON];
+        bool     radioButton_enabled          [PAGES][RADIOBUTTON];
+        bool     radioButton_visible          [PAGES][RADIOBUTTON];
+        int      radioButton_group            [PAGES][RADIOBUTTON];
+    void addradioButton(int page, uint16_t Xpos, uint16_t Ypos, String text, int group=0, int size=SIZE12PT28PX,
+                    bool checked=false, uint16_t indicatorColor=TFT_BLACK,uint16_t textColor=TFT_WHITE,
+                    uint16_t boxColor=TFT_WHITE, uint16_t boxBorder=TFT_BLACK,bool enabled=true,
+                    bool visible=true)
+    {
+        Log(page);
+        HCT
+        int number = radioButton_counts[page]++; // Current label number
+
+        // Assign variables
+        radioButton_XPos             [page][number]=Xpos;
+        radioButton_YPos             [page][number]=Ypos;
+        radioButton_text             [page][number]=text;
+        radioButton_size             [page][number]=size;
+        radioButton_color_indicator  [page][number]=indicatorColor;
+        radioButton_color_text       [page][number]=textColor;
+        radioButton_color_box        [page][number]=boxColor;
+        radioButton_color_box_border [page][number]=boxBorder;
+        radioButton_checked          [page][number]=checked;
+        radioButton_enabled          [page][number]=enabled;
+        radioButton_visible          [page][number]=visible;
+        radioButton_group            [page][number]=group;
+        
+        if (started && (CurrentPage == page)) {
+          drawRadioButton(page, number);
+        }
+
+        return number; // Return new check-box's index
+    }
+    void drawRadioButton(int page, int i){
+        HCT
+        if(radioButton_visible[i]){ // Only draw if it is visible
+            
+            // Get values for easier use later
+            uint16_t checkColor =radioButton_color_indicator[page][i];
+            uint16_t textColor  =radioButton_color_text[page][i];
+            uint16_t boxColor   =radioButton_color_box[page][i];
+            uint16_t borderColor=radioButton_color_box_border[page][i];
+
+            if(!radioButton_enabled[page][i]){ // Dim if it is disabled
+                checkColor =dim(checkColor ); // Dim tick color
+                textColor  =dim(textColor  ); // Dim text color
+                boxColor   =dim(textColor  ); // Dim box background color
+                borderColor=dim(borderColor); // Dim box border color
+            }
+
+            // Draw the box
+
+            // Get values for easier use later
+            uint16_t X=radioButton_XPos[page][i];
+            uint16_t Y=radioButton_YPos[page][i];
+            uint16_t size=radioButton_size[page][i];
+
+            tft.fillRoundRect(X,Y,size,size,size/2,boxColor); // Fill background
+            
+            if(boxColor!=borderColor){ // Only draw border if it is different
+                tft.drawRoundRect(X,Y,size,size,size/2,borderColor); // Draw border
+            }
+
+            // Draw the check mark
+            // Don't try to understand this. Even I (this library's writer) cannot understand it.
+            if(radioButton_checked[page][i]){
+                int half=size/2;
+                int quarter=half/2;
+                
+                if((size==SIZE9PT18PX)||(size==SIZE18PT42PX)){// (18%4)!=0      (42%4)!=0
+                    tft.fillRoundRect(X+quarter,Y+quarter,half+1,half+1,quarter,checkColor); // Draw border
+                }
+                else{
+                    tft.fillRoundRect(X+quarter,Y+quarter,half,half,quarter,checkColor); // Draw border
+                }
+            }
+
+            uint16_t txtY = Y + ( size / 2 ); // Be careful, it's a little confusing
+
+            tft.setTextSize(1, 1); // Reset text size
+            // Add to txtY as much as needed depending on box size
+            // And set font
+            #ifndef DISABLEFONTS
+            switch(size){
+                case SIZE12PT28PX: // 12pt 28px
+                    tft.setFont(&FreeSans12pt7b);
+                    txtY+=8;
+                    break;
+                case SIZE9PT18PX : // 9pt 18px
+                    tft.setFont(&FreeSans9pt7b );
+                    txtY+=6;
+                    break;
+                case SIZE18PT42PX: // 18pt 42px
+                    tft.setFont(&FreeSans18pt7b);
+                    txtY+=12;
+                    break;
+                case SIZE24PT56PX: // 24pt 56px
+                    tft.setFont(&FreeSans24pt7b);
+                    txtY+=16;
+                    break;
+            }
+            #else
+                tft.setFont(NULL);
+                switch (size) {
+                    case SIZE12PT28PX: // 12pt 28px
+                        tft.setTextSize(3);
+                        txtY -= 12;
+                        break;
+                    case SIZE9PT18PX: // 9pt 18px
+                        tft.setTextSize(2);
+                        txtY -= 8;
+                        break;
+                    case SIZE18PT42PX: // 18pt 42px
+                        tft.setTextSize(5);
+                        txtY -= 20;
+                        break;
+                    case SIZE24PT56PX: // 24pt 56px
+                        tft.setTextSize(7);
+                        txtY -= 28;
+                        break;
+                }
+            #endif
+
+            tft.setTextColor(textColor); // Set text color
+            tft.setCursor(X+size+5,txtY); // Set text position
+            tft.print(radioButton_text[page][i]); // Print the text at last
+        }
+    }
+    void undrawRadioButton(int page, int i){
+        HCT
+        int size=radioButton_size[page][i]; // Get size for easier use
+            #ifndef DISABLEFONTS
+            switch(size){
+                case SIZE12PT28PX: // 12pt 28px
+                    tft.setFont(&FreeSans12pt7b);
+                    break;
+                case SIZE9PT18PX : // 9pt 18px
+                    tft.setFont(&FreeSans9pt7b );
+                    break;
+                case SIZE18PT42PX: // 18pt 42px
+                    tft.setFont(&FreeSans18pt7b);
+                    break;
+                case SIZE24PT56PX: // 24pt 56px
+                    tft.setFont(&FreeSans24pt7b);
+                    break;
+            }
+            #else
+                tft.setFont(NULL);
+                switch (size) {
+                    case SIZE12PT28PX: // 12pt 28px
+                        tft.setTextSize(3);
+                        break;
+                    case SIZE9PT18PX: // 9pt 18px
+                        tft.setTextSize(2);
+                        break;
+                    case SIZE18PT42PX: // 18pt 42px
+                        tft.setTextSize(5);
+                        break;
+                    case SIZE24PT56PX: // 24pt 56px
+                        tft.setTextSize(7);
+                        break;
+                }
+            #endif
+        tft.setTextSize(1,1); // Reset text size. We are not going to draw any text, we are going to get text size.
+        int16_t x = 0, y = 0, X1, Y1; // variables needed to use getTextBounds()
+        uint16_t W, H;
+        tft.getTextBounds(radioButton_text[page][i], x, y, &X1, &Y1, &W, &H); // Calculate text size
+        tft.fillRect(radioButton_XPos[page][i],radioButton_YPos[page][i],size+10+W,size,page_backColors[page]); // Fill the check-box with page background color
+    }
+    void checkRadioButtonTouched(int page, int i){
+        if((radioButton_enabled[page][i])&&(radioButton_visible[page][i])){
+            uint16_t X           = radioButton_XPos[page][i];                   // X
+            uint16_t Y           = radioButton_YPos[page][i];                   // Y
+            uint16_t size        = radioButton_size[page][i];                   // Get height
+            // Get width
+            int16_t x = 0, y = 0, X1, Y1;                                               // variables needed to use getTextBounds()
+            uint16_t W, H;
+            tft.getTextBounds(radioButton_text[page][i], x, y, &X1, &Y1, &W, &H);   // Calculate text size
+            uint16_t Width       = size+10+W;              // Get width
+            // Check if it was pressed
+            bool pressed=inRegion(pixel_y, Y + size , Y, pixel_x, X, X + Width);
+            if(pressed){ // Toggle states
+                for(int v=0;v<(radioButton_counts[page]);v++){
+                    if((radioButton_group[page][v])==(radioButton_group[page][i])){
+                        if(v==i)continue;
+                        if(radioButton_checked[page][v]){
+                            radioButton_checked[page][v]=false;
+                            drawRadioButton(page,v);
+                        }
+                    }
+                }
+                if(!radioButton_checked[page][i]){
+                    radioButton_checked[page][i]=true;
+                    drawRadioButton(page,i);
+                }
+            }
+        }
+    }
+#endif
 void navigatePage( int page , int transition){ // Navigates to another page
     HCT
     switch (transition) { // Currently only one transition is supported
@@ -1554,6 +1765,11 @@ void navigatePage( int page , int transition){ // Navigates to another page
                             undrawSlider(CurrentPage, i);
                         }
                     #endif
+                    #ifdef RADIOBUTTON // Undraw all sliders
+                        for (int i = 0; i < radioButton_counts[CurrentPage]; i++) {
+                            undrawRadioButton(CurrentPage, i);
+                        }
+                    #endif
                 }
                 else
                     tft.fillScreen(page_backColors[page]); // if background colors were different, fill the whole screen
@@ -1576,6 +1792,11 @@ void navigatePage( int page , int transition){ // Navigates to another page
             #ifdef SLIDER // Draw all sliders
                 for (int i = 0; i < slider_counts[page]; i++) {
                     drawSlider(page, i);
+                }
+            #endif
+            #ifdef RADIOBUTTON // Draw all sliders
+                for (int i = 0; i < radioButton_counts[page]; i++) {
+                    drawRadioButton(page, i);
                 }
             #endif
             CurrentPage = page; // Set CurrentPage
@@ -1606,6 +1827,11 @@ void checkPage( ) { // Check for touches
         #ifdef SLIDER // Handle sliders
             for (int i = 0; i < slider_counts[CurrentPage]; i++) { // Iterate through sliders
             checkSliderTouched(CurrentPage,i);
+            }
+        #endif
+        #ifdef RADIOBUTTON // Handle sliders
+            for (int i = 0; i < radioButton_counts[CurrentPage]; i++) { // Iterate through radio buttons
+            checkRadioButtonTouched(CurrentPage,i);
             }
         #endif
     }
