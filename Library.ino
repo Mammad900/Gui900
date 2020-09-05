@@ -1566,7 +1566,7 @@ int Centre(int Length, int wid, int Left, int CHwid) {
         radioButton_enabled          [page][number]=enabled;
         radioButton_visible          [page][number]=visible;
         radioButton_group            [page][number]=group;
-
+        
         if (started && (CurrentPage == page)) {
           drawRadioButton(page, number);
         }
@@ -1594,7 +1594,7 @@ int Centre(int Length, int wid, int Left, int CHwid) {
 
             // Get values for easier use later
             uint16_t X=radioButton_XPos[page][i];
-            uint16_t Y=radioButton_XPos[page][i];
+            uint16_t Y=radioButton_YPos[page][i];
             uint16_t size=radioButton_size[page][i];
 
             tft.fillRoundRect(X,Y,size,size,size/2,boxColor); // Fill background
