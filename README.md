@@ -19,7 +19,7 @@ Just say how your app should look like and what should it do, and the library wi
   TFT screen will turn off after inactivity to reduce power usage and avoid image persistance (optional)
 * **Ease of use**  
   Almost every action only needs one function call, and some of them are automatically done.  
-  And only one configuration is needed for most of the modules (Multi-page, buttons, check-boxes, sliders, screen-timeout, screen brightness, fonts, screen-off animation, touch)
+  And only one configuration is needed for most of the modules (Multi-page, buttons, check-boxes, sliders, radio-buttons, screen-timeout, screen brightness, fonts, screen-off animation, touch)
 
 ## Instructions
 
@@ -33,7 +33,7 @@ To create an application using this GUI library, you have to:
 
 * In setup():
 
-1. Build the pages using [`addbutton()`](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/addbutton()), [`addlabel()`](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/addlabel()), [`addcheckBox()`](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/addcheckBox()) and [`addslider()`](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/addslider())
+1. Build the pages using [`addbutton()`](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/addbutton()), [`addlabel()`](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/addlabel()), [`addcheckBox()`](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/addcheckBox()), [`addslider()`](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/addslider()) and `addradioButton()`
 2. Call [`start()`](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/start()) to initialize the TFT screen and render the first page
 
 * In loop():
