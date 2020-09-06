@@ -97,6 +97,9 @@ bool quit; // Used for runsketch()
         void changeCheckBoxEnabled(int page,int i,bool val); // Enables or disables a check-box.
         void changeCheckBoxVisible(int page,int i,bool val); // Hides or shows a check-box.
     #endif
+    #ifdef RADIOBUTTON
+        void selectRadioButton(int page, int i, bool draw=true);
+    #endif
     #if (defined(SCREENTIMEOUT))||(defined (ALLOWSCREENCONTROL)) // Functions for turning screen on/off. Only if SCREENTIMEOUT or ALLOWSCREENCONTROL is defined
         void scrOff(bool fast=false);//Turns off the screen
         void scrOn();//Turns on the screen
@@ -1561,10 +1564,12 @@ int Centre(int Length, int wid, int Left, int CHwid) {
         radioButton_color_text       [page][number]=textColor;
         radioButton_color_box        [page][number]=boxColor;
         radioButton_color_box_border [page][number]=boxBorder;
-        radioButton_checked          [page][number]=checked;
+        radioButton_checked          [page][number]=false;
         radioButton_enabled          [page][number]=enabled;
         radioButton_visible          [page][number]=visible;
         radioButton_group            [page][number]=group;
+        if(checked)
+            selectRadioButton(page,number,false);
         
         if (started && (CurrentPage == page)) {
           drawRadioButton(page, number);
@@ -1721,20 +1726,25 @@ int Centre(int Length, int wid, int Left, int CHwid) {
             // Check if it was pressed
             bool pressed=inRegion(pixel_y, Y + size , Y, pixel_x, X, X + Width);
             if(pressed){ // Toggle states
-                for(int v=0;v<(radioButton_counts[page]);v++){
-                    if((radioButton_group[page][v])==(radioButton_group[page][i])){
-                        if(v==i)continue;
-                        if(radioButton_checked[page][v]){
-                            radioButton_checked[page][v]=false;
-                            drawRadioButton(page,v);
-                        }
-                    }
-                }
-                if(!radioButton_checked[page][i]){
-                    radioButton_checked[page][i]=true;
-                    drawRadioButton(page,i);
+                selectRadioButton(page, i,true);
+            }
+        }
+    }
+    void selectRadioButton(int page, int i, bool draw=true){
+        for(int v=0;v<(radioButton_counts[page]);v++){
+            if((radioButton_group[page][v])==(radioButton_group[page][i])){
+                if(v==i)continue;
+                if(radioButton_checked[page][v]){
+                    radioButton_checked[page][v]=false;
+                    if(draw)
+                        drawRadioButton(page,v);
                 }
             }
+        }
+        if(!radioButton_checked[page][i]){
+            radioButton_checked[page][i]=true;
+            if(draw)
+                drawRadioButton(page,i);
         }
     }
 #endif
