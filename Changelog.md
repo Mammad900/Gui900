@@ -1,8 +1,8 @@
 # Release notes
 
-## Not released yet
+## v0.1.0
 
-**ADDED** *ELEMENTS* Support for radio buttons  
+**ADDED** *ELEMENTS* New element type: Radio-buttons  
 **ADDED** *ELEMENTS* Support for vertical sliders
 
 ## v0.0.3
