@@ -12,6 +12,7 @@ A clear and concise description of what the bug is.
 
 **To Reproduce**
 Steps to reproduce the behavior:
+
 1. Write '....'
 2. Upload the code
 3. Tap '....' on TFT screen
@@ -24,10 +25,11 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Please complete the following information:**
- - Board: [e.g. Arduino Due]
- - Arduino IDE version [e.g. 1.8.8]
- - Version [e.g. 0.0.1]
- - TFT controller [e.g. ILI9341]
+
+- Board: [e.g. Arduino Due]
+- Arduino IDE version [e.g. 1.8.8]
+- Version [e.g. 0.0.1]
+- TFT controller [e.g. ILI9341]
 
 **Additional context**
 Add any other context about the problem here.
