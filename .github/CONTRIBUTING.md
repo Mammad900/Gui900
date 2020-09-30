@@ -6,8 +6,10 @@ First, thanks for spending your valuable time on contributing.
 
 If you found a bug, please follow these steps to report a bug:
 
-1. _Optional_ Try to reproduce the bug in different situations to make it easier to fix
-2. Open [this](https://github.com/Mammad900/GUI-For-Arduino-TFT/issues/new?assignees=&labels=bug&template=bug_report.md&title=) link and fill in the template and click 'submit new issue'
+1. Try to reproduce the bug with the latest version of the library, it might be already fixed
+2. _Optional_ Try to reproduce the bug in different situations to make it easier to fix
+3. Run `graphictest_kbv` example from `MCUFRIEND_kbv` library and read the output from serial monitor to find out your TFT screen's controller
+4. Open [this](https://github.com/Mammad900/GUI-For-Arduino-TFT/issues/new?assignees=&labels=bug&template=bug_report.md&title=) link and fill in the template and click 'submit new issue'
 
 **I may ask you for more information after you submit the issue; So please be available.**
 
