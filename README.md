@@ -1,4 +1,4 @@
-# GUI for Arduino TFT
+# Gui900
 
 Using this library, you can make a nice UI for your application (which is running on an Arduino board) in just a few minutes. You can make a better interface with a more readable code, and save time and energy.  
 Just say how your app should look like and what should it do, and the library will take care of the rest.
