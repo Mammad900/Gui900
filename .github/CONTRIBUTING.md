@@ -1,4 +1,4 @@
-# How to contribute to `GUI For Arduino TFT`
+# How to contribute to `Gui900`
 
 First, thanks for spending your valuable time on contributing.
 
