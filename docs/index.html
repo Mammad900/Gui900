@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gui900</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        #header-image{
+            width: 100vw;
+            max-width: 500px;
+        }
+        body{
+            margin: 0;
+        }
+        #header{
+            font-size: 5em;
+            font-family: monospace;
+            margin: 0;
+        }
+        #content{
+            margin: 1em;
+        }
+        #features{
+            display: flex;
+        }
+        #features>div{
+            width: 33%;
+            text-align: center;
+            padding: 5px;
+        }
+        #features>div h3:first-child{
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div style="text-align: center;">
+        <img id="header-image" src="https://repository-images.githubusercontent.com/274697681/05c88300-cb15-11ea-89be-ba14fa4d7288">
+        <h1 id="header">Gui900</h1>
+        <p>
+            A GUI library for Arduino and TFT shield
+        </p>
+        <p>
+            I can help you create a UI for your project, from a simple math game to an I2C analyzer.<br/>
+            Tell me how the UI should look like and what it does. I will take care of the rest.
+        </p>
+    </div>
+    <div id="content">
+        <br>
+        <br>
+            <h2 style="text-align: center;">Features</h2>
+        <div id="features">
+            <div>
+                <h3>
+                    Multi-page
+                </h3>
+                <p>
+                    You can have up to 32767 pages (if the RAM lets you)
+                </p>
+            </div>
+            <div>
+                <h3>
+                    Flexible
+                </h3>
+                <p>
+                    You can change the location, font, size, and color of the elements.
+                </p>
+                <p>
+                    You can even have different colors for different parts of a single element
+                </p>
+            </div>
+            <div>
+                <h3>
+                    Minimal code
+                </h3>
+                <p>
+                    About 5 short lines of code for configuration,<br>
+                    1 line of code for each element
+                </p>
+                <p>
+                    A visual editor will be coming soon, and you don't even have to write those few lines!
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
