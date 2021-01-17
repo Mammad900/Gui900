@@ -97,6 +97,9 @@ bool quit; // Used for runsketch()
         void changeCheckBoxEnabled(int page,int i,bool val); // Enables or disables a check-box.
         void changeCheckBoxVisible(int page,int i,bool val); // Hides or shows a check-box.
     #endif
+    #ifdef SLIDER // Slider functions
+        void drawSlider(uint16_t page,uint16_t i);
+    #endif
     #ifdef RADIOBUTTON
         void selectRadioButton(int page, int i, bool draw=true);
     #endif
