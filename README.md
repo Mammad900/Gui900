@@ -1,27 +1,33 @@
 # Gui900
 
 Using this library, you can make a nice UI for your application (which is running on an Arduino board) in just a few minutes. You can make a better interface with a more readable code, and save time and energy.  
-Just say how your app should look like and what should it do, and the library will take care of the rest.
+Just say how your app should look like and what should it do, and Gui900 will take care of the rest.
 
 ## Features
 
-* **Support for multi-page programs**  
+* **Support for multi-page programs**
+  
   You can add as many as 32767 pages if you have enough RAM
-* **Support for button, label, check-box, slider and radio-button**  
-* **Ability to include another sketch in the program (experimental)**  
-  Just paste the code of the second sketch, rename the functions and variables to avoid conflicts, and call `runsketch(setup,loop)`
-* **Flexibility**  
+* **Support for button, label, check-box, slider and radio-button**
+* **Flexibility**
+  
   You can customize almost everything of the elements.  
   There are a lot of optional things.
-* **Automatic font size for buttons**  
-  Font size will automatically calculated to fit into the button
-* **Screen time-out**  
+* **Screen time-out**
+  
   TFT screen will turn off after inactivity to reduce power usage and avoid image persistance (optional)
-* **Ease of use**  
+* **Ease of use**
+  
   Almost every action only needs one function call, and some of them are automatically done.  
   And only one configuration is needed for most of the modules (Multi-page, buttons, check-boxes, sliders, radio-buttons, screen-timeout, screen brightness, fonts, screen-off animation, touch)
+* **Visual editor**
+
+  [Gui900 visual editor](https://mammad900.github.io/Gui900-visual-editor/) makes writing Gui900 apps much faster and easier.  
+  It generates most of Gui900 related code automatically and lets you preview the app without using a real Arduino board.
 
 ## Instructions
+
+*Note: You don't need to do these if you use [Gui900 visual editor](https://mammad900.github.io/Gui900-visual-editor/)*
 
 To create an application using this GUI library, you have to:
 
