@@ -30,7 +30,7 @@ bool quit; // Used for runsketch()
     #endif
     //Check libraries
         #if MCUFRIEND_KBV_H_ < 298
-            #error "MCUFIEND_kbv library is too old. Please update it to at least 2.9.8"
+            #error "The currently installed MCUFIEND_kbv library is too old. Please update it to at least 2.9.8"
         #endif
 //Defines
     #define Log(a) Serial.print(#a);Serial.print(" : ");Serial.println(a);
