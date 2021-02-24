@@ -28,6 +28,10 @@ bool quit; // Used for runsketch()
         #include <Fonts/FreeSans18pt7b.h>           // Big Sans font
         #include <Fonts/FreeSans24pt7b.h>           // Huge Sans font
     #endif
+    //Check libraries
+        #if MCUFRIEND_KBV_H_ < 298
+            #error "MCUFIEND_kbv library is too old. Please update it to at least 2.9.8"
+        #endif
 //Defines
     #define Log(a) Serial.print(#a);Serial.print(" : ");Serial.println(a);
     #define runsketch(stp,lop) stp();while(true){lop();} // Runs an embedded sketch
