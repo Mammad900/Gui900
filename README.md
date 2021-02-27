@@ -39,13 +39,13 @@ To create an application using this GUI library, you have to:
 
 * In setup():
 
-1. Build the pages using [`addbutton()`](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/addbutton()), [`addlabel()`](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/addlabel()), [`addcheckBox()`](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/addcheckBox()), [`addslider()`](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/addslider()) and `addradioButton()`
-2. Call [`start()`](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/start()) to initialize the TFT screen and render the first page
+6. Build the pages using [`addbutton()`](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/addbutton()), [`addlabel()`](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/addlabel()), [`addcheckBox()`](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/addcheckBox()), [`addslider()`](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/addslider()) and `addradioButton()`
+7. Call [`start()`](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/start()) to initialize the TFT screen and render the first page
 
 * In loop():
 
-1. Call [`checkPage()`](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/checkPage()) to make the application responsive to touches
-2. Check element states and respond to changes if needed
+8. Call [`checkPage()`](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki/checkPage()) to make the application responsive to touches
+9. Check element states and respond to changes if needed
 
 **[Reference](https://github.com/Mammad900/Arduino-TFT-GUI-library/wiki#reference)**
 
