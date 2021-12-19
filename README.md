@@ -1,3 +1,6 @@
+## Note: This project is not maintained anymore. 
+**\*If\*** the developer decides to continue this project, Gui900 will be created from scratch with a new architecture, and possibly under a different name. 
+
 # Gui900
 
 Using this library, you can make a nice UI for your application (which is running on an Arduino board) in just a few minutes. You can make a better interface with a more readable code, and save time and energy.  
